@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>icons/2sprout.png</file>
+    <file>icons/db_add.png</file>
+    <file>icons/db_host.png</file>
+    <file>icons/sprites_07.png</file>
+    <file>icons/sprites_09.png</file>
+    <file>icons/started.png</file>
+    <file>icons/stop.png</file>
+</qresource>
+</RCC>
