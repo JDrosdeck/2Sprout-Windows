@@ -103,6 +103,10 @@ color: #000000;
       <property name="text">
        <string>Start</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>icons/started.png</normaloff>icons/started.png</iconset>
+      </property>
      </widget>
      <widget class="QPushButton" name="pushButton_2">
       <property name="geometry">
@@ -116,6 +120,10 @@ color: #000000;
       <property name="text">
        <string>Stop</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>icons/stop.png</normaloff>icons/stop.png</iconset>
+      </property>
      </widget>
      <widget class="QPushButton" name="pushButton_3">
       <property name="geometry">
@@ -128,6 +136,10 @@ color: #000000;
       </property>
       <property name="text">
        <string>Advanced</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>icons/sprites_09.png</normaloff>icons/sprites_09.png</iconset>
       </property>
      </widget>
     </widget>
@@ -328,6 +340,10 @@ color: #000000;
       <property name="text">
        <string>Test</string>
       </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>icons/db_host.png</normaloff>icons/db_host.png</iconset>
+      </property>
      </widget>
      <widget class="QPushButton" name="pushButton_6">
       <property name="geometry">
@@ -340,6 +356,10 @@ color: #000000;
       </property>
       <property name="text">
        <string>Home</string>
+      </property>
+      <property name="icon">
+       <iconset>
+        <normaloff>icons/sprites_09.png</normaloff>icons/sprites_09.png</iconset>
       </property>
      </widget>
      <widget class="QGroupBox" name="groupBox_3">

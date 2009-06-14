@@ -3,7 +3,7 @@
 # -------------------------------------------------
 TARGET = 2sprout
 TEMPLATE = app
-
+RC_FILE = app.rc
 SOURCES += main.cpp \
     sprout.cpp
 HEADERS += sprout.h

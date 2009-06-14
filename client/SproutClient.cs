@@ -26,13 +26,22 @@ class SproutClient
 {
     const int THREAD_COUNT = 9;
 
-    static String useUpnp = ""; 
-    static String configPath = "2sprout.conf"; 
+    static String useUpnp = "";
+    static String configPath; 
     static String cypher;
     static String secretKey;
     static String cypherTemp = "AosIMELjRx"; 
     static String secretKeyTemp = "what";
-    static int sleepTime; 
+    static int sleepTime;
+
+    static Object packetsReceivedLock;
+    static Object packetsReceivedDay2Lock;
+    static Object packetsMissedLock;
+    static Object packetsMissedDay2Lock;
+    static Object reSentPacketsLock;
+    static Object reSentPacketsDay2Lock;
+    static Object sproutQueueLock;
+    static Object unprocessedQueueLock; 
 
     static List<int> packetsReceived;
     static List<int> packetsReceivedDay2;
@@ -40,8 +49,8 @@ class SproutClient
     static List<int> packetsMissed;
     static List<int> packetsMissedDay2;
 
-    static List<int> reSentMissedPackets;
-    static List<int> reSentMissedPacketsDay2; 
+    static List<int> reSentPackets;
+    static List<int> reSentPacketsDay2; 
 
     static Queue<String> sproutQueue; 
     static Queue<String> unprocessedQueue;
@@ -56,6 +65,7 @@ class SproutClient
 
     public static void Main(String[] args)
     {
+        configPath = AppDomain.CurrentDomain.BaseDirectory + "//2sprout.conf"; //May be changed by CLA
 
         if (!ParseArguments(args))
         {
@@ -75,14 +85,25 @@ class SproutClient
         packetsReceivedDay2 = new List<int>();
         packetsMissed = new List<int>();
         packetsMissedDay2 = new List<int>();
-        reSentMissedPackets = new List<int>();
-        reSentMissedPacketsDay2 = new List<int>(); 
-    
+        reSentPackets = new List<int>();
+        reSentPacketsDay2 = new List<int>();
+
+        packetsReceivedLock = new Object();
+        packetsReceivedDay2Lock = new Object();
+        packetsMissedLock = new Object();
+        packetsMissedDay2Lock = new Object();
+        reSentPacketsLock = new Object();
+        reSentPacketsDay2Lock = new Object();
+        sproutQueueLock = new Object();
+        unprocessedQueueLock = new Object(); 
+
         unprocessedQueue = new Queue<String>();
         sproutQueue = new Queue<String>();
         currentDate = "";
         nextDate = "";
         dateReceived = false;
+
+        configPath = AppDomain.CurrentDomain.BaseDirectory + "//2sprout.conf"; //May be changed by CLA
 
         dbConfig = ReadConfig();
         if (useUpnp.Equals("true", StringComparison.OrdinalIgnoreCase))
@@ -195,7 +216,7 @@ class SproutClient
     public static void ShowHelp(String [] args)
     {
         Console.WriteLine("Usage: SproutClient.exe [-p port_number] [-c configuration_path]");
-        Console.WriteLine("Optional: [-h help][-v version]");
+        Console.WriteLine("Optional: [-h help][-v version] [-d test database]");
     }
 
 
@@ -256,7 +277,18 @@ class SproutClient
         String secondSub = "";  
         Config myConfig = new Config();
         StreamReader stream = null;
-        FileInfo sourceFile = new FileInfo(configPath); //"2sprout.conf"
+        FileInfo sourceFile; 
+        try
+        {
+            sourceFile = new FileInfo(configPath); //"2sprout.conf"
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            myConfig.useDb = false;
+            return myConfig;
+        }
+
         try
         {
             stream = sourceFile.OpenText();
@@ -264,8 +296,14 @@ class SproutClient
         catch (FileNotFoundException e)
         {
             Console.WriteLine(e.Message);
-            myConfig.useDb = false;  
-            return myConfig; 
+            myConfig.useDb = false;
+            return myConfig;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            myConfig.useDb = false;
+            return myConfig;
         }
 
         while (!stream.EndOfStream)
@@ -339,8 +377,8 @@ class SproutClient
         stream.Close(); 
         if (numOfArgsFound != 9)
         {
-            Console.WriteLine("Problem: 2sprout.conf corrupted.");
-            throw new FormatException(); 
+            Console.WriteLine("Problem: 2sprout.conf corrupted. Starting API.");
+            myConfig.useDb = false; 
         }
 
         return myConfig; 
@@ -374,12 +412,19 @@ class SproutClient
             input = Convert.EncryptDecrypt(input, cypher); 
             keys = input.Split(new String[1] { "^" }, 3, StringSplitOptions.None);
 
-            Console.WriteLine("{0}  {1}  {2}", keys[0], keys[1], keys[2]);
-            if (keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "")
+            if (keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "" && int.TryParse(keys[2], out sleepTime))
             {
                 cypher = keys[0];
                 secretKey = keys[1];
-                sleepTime = int.Parse(keys[2]); 
+                Console.WriteLine("{0}  {1}  {2}", keys[0], keys[1], keys[2]);
+            }
+            else
+            {
+                sleepTime = 30000;
+                Console.WriteLine("Cypher/Secret Key Corrupted");
+
+                //To be removed upon implementation
+                Console.WriteLine(input);
             }
         }
 
@@ -448,6 +493,7 @@ class SproutClient
                     dbConfig.dbHost, dbConfig.dbName, dbConfig.dbUser, dbConfig.dbPassword, dbConfig.dbPort);
                 try
                 {
+                    Console.WriteLine("Problem: MySQL failed to connect.");
                     connection = new MySqlConnection(connect);
                     connection.Open();
                 }
@@ -456,36 +502,35 @@ class SproutClient
                     Console.WriteLine(e.Message);
                     return;
                 }
-
+                Console.WriteLine("Ready to insert into MySQL database");
                 for (; ; )
                 {
-                    Monitor.Enter(sproutQueue);
-                    if (sproutQueue.Count == 0)
+                    if (sproutQueue.Count > 0)
                     {
-                        Monitor.Exit(sproutQueue);
-                        Thread.Sleep(100);
+                        lock (sproutQueueLock)
+                        {
+                            query = sproutQueue.Dequeue();
+                        }
+                        query = query.Replace("\\", "\\\\");
+                        query = query.Replace("'", "\\'");
+                        query = String.Format("INSERT INTO {0} (`{1}`) VALUES('{2}')", dbConfig.dbTable, dbConfig.dbCol, query);
+                        MySqlCommand insertData = new MySqlCommand(query, connection);
+
+                        try
+                        {
+                            insertData.ExecuteNonQuery();
+                            Console.WriteLine("MySQL insert successful");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Problem: MySQL failed to insert data.");
+                            Console.WriteLine(e.Message);
+                            //return; 
+                        }
                     }
                     else
                     {
-                        while (sproutQueue.Count > 0)
-                        {
-                            query = sproutQueue.Dequeue().Replace("\\", "\\\\");
-                            query = query.Replace("'", "\\'");
-                            query = String.Format("INSERT INTO {0} (`{1}`) VALUES('{2}')", dbConfig.dbTable, dbConfig.dbCol, query);
-                            MySqlCommand insertData = new MySqlCommand(query, connection);
-
-                            try
-                            {
-                                insertData.ExecuteNonQuery();
-                                Console.WriteLine("MySQL insert successful");
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.Message);
-                                //return; 
-                            }
-                        }
-                        Monitor.Exit(sproutQueue);
+                        Thread.Sleep(100);
                     }
                 }
             }
@@ -509,36 +554,37 @@ class SproutClient
                     Console.WriteLine(e.Message);
                     return;
                 }
+
+                Console.WriteLine("Ready to insert into postgres database");
                 for (; ; )
                 {
-                    Monitor.Enter(sproutQueue);
-                    if (sproutQueue.Count == 0)
+
+                    if (sproutQueue.Count > 0)
                     {
-                        Monitor.Exit(sproutQueue);
-                        Thread.Sleep(100);
+                        lock (sproutQueueLock)
+                        {
+                            query = sproutQueue.Dequeue();
+                        }
+                        query = query.Replace("\\", "\\\\");
+                        query = query.Replace("'", "\\'");
+                        query = String.Format("INSERT INTO \"{0}\" (\"{1}\") VALUES('{2}')", dbConfig.dbTable, dbConfig.dbCol, query);
+                        NpgsqlCommand insertData = new NpgsqlCommand(query, connection);
+
+                        try
+                        {
+                            insertData.ExecuteNonQuery();
+                            Console.WriteLine("postgres insert successful");
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine("Problem: postgres failed to insert data.");
+                            Console.WriteLine(e.Message);
+                            //return; 
+                        }
                     }
                     else
                     {
-                        while (sproutQueue.Count > 0)
-                        {
-                            query = sproutQueue.Dequeue().Replace("\\", "\\\\");
-                            query = query.Replace("'", "\\'");
-                            query = String.Format("INSERT INTO {0} ({1}) VALUES('{2}')", dbConfig.dbTable, dbConfig.dbCol, query);
-                            NpgsqlCommand insertData = new NpgsqlCommand(query, connection);
-
-                            try
-                            {
-                                insertData.ExecuteNonQuery();
-                                Console.WriteLine("postgres insert successful");
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine("Problem: postgres failed to insert data.");
-                                Console.WriteLine(e.Message);
-                                //return; 
-                            }
-                        }
-                        Monitor.Exit(sproutQueue);
+                        Thread.Sleep(100);
                     }
                 }
             }
@@ -588,9 +634,10 @@ class SproutClient
 
             inData = Encoding.ASCII.GetString(inBytes);
 
-            Monitor.Enter(unprocessedQueue); 
+            lock (unprocessedQueueLock)
+            {
                 unprocessedQueue.Enqueue(inData);
-            Monitor.Exit(unprocessedQueue); 
+            }
         }
 
     }
@@ -615,17 +662,19 @@ class SproutClient
 
             if (sizeOfReceived > 1)
             {
-                Monitor.Enter(packetsReceived); 
+                lock(packetsReceivedLock)
+                {
                     tempList.AddRange(packetsReceived);        
                     packetsReceived.Clear();
-                Monitor.Exit(packetsReceived); 
+                }
 
                 tempList.Sort();
                 lastPacket = tempList[tempList.Count - 1];
 
-                Monitor.Enter(packetsReceived); 
+                lock(packetsReceivedLock)
+                {
                     packetsReceived.Add(lastPacket);
-                Monitor.Exit(packetsReceived); 
+                }
 
                 sizeOfVector = packetsMissed.Count;
                 sizeOfNewPackets = tempList.Count;
@@ -641,9 +690,10 @@ class SproutClient
 
                         for (int j = 1; j < remainder; j++)
                         {
-                            Monitor.Enter(packetsMissed); 
+                            lock(packetsMissedLock)
+                            {
                                 packetsMissed.Add(tempList[i] + j);
-                            Monitor.Exit(packetsMissed); 
+                            }
                         }
                     }
                 }
@@ -675,20 +725,18 @@ class SproutClient
         Console.WriteLine("Starting Feed at GetFeed");
         for (; ; )
         {
-            Monitor.Enter(sproutQueue);
-            if (sproutQueue.Count == 0)
-            {
-                Monitor.Exit(sproutQueue);
-                Thread.Sleep(100);
-            }
-            else
+
+            if (sproutQueue.Count > 0)
             {
                 try
                 {
                     writer = new StreamWriter(path, true);
-                    while (sproutQueue.Count > 0)
+                    lock (sproutQueueLock)
                     {
-                        writer.WriteLine(sproutQueue.Dequeue());
+                        while (sproutQueue.Count > 0)
+                        {
+                            writer.WriteLine(sproutQueue.Dequeue());
+                        }
                     }
                     writer.Close();
                     writer.Dispose();
@@ -697,8 +745,11 @@ class SproutClient
                 {
                     Thread.Sleep(10);
                 }
-                Monitor.Exit(sproutQueue);
                 Thread.Sleep(4);
+            }
+            else
+            {
+                Thread.Sleep(100);
             }
         }
     }
@@ -777,20 +828,17 @@ class SproutClient
 
         for (; ; )
         {
-            Monitor.Enter(unprocessedQueue);
-            if (unprocessedQueue.Count == 0)
+
+            if (unprocessedQueue.Count > 0)
             {
-                Monitor.Exit(unprocessedQueue);
-                Thread.Sleep(100);
-            }
-            else
-            {
-                token = unprocessedQueue.Dequeue();
-                Monitor.Exit(unprocessedQueue);
+                lock (unprocessedQueueLock)
+                {
+                    token = unprocessedQueue.Dequeue();
+                }
 
                 //Convert from base 64 and decrypt
                 token = Convert.DecodeFrom64(token);
-                token = Convert.EncryptDecrypt(token, cypherTemp); 
+                token = Convert.EncryptDecrypt(token, cypherTemp);
 
                 section = token.Split(new String[1] { "^" }, 6, StringSplitOptions.None);
 
@@ -805,25 +853,25 @@ class SproutClient
 
                     if (!Convert.GetMD5(castMinusMd5).Equals(section[0]))
                     {
-                        Console.WriteLine("Problem: MD5 mismatch"); 
+                        Console.WriteLine("Problem: MD5 mismatch");
                     }
                     else//MD5 is good to go
                     {
                         if (!section[1].Equals(secretKeyTemp))
                         {
-                            Console.WriteLine("Problem: Secret Key Failed"); 
+                            Console.WriteLine("Problem: Secret Key Failed");
                         }
                         else//Secret Key passes
                         {
                             if (currentDate.Equals(""))
                             {
-                                currentDate = section[2]; 
+                                currentDate = section[2];
                             }
                             if (!section[2].Equals(currentDate) && nextDate.Equals(""))
                             {
-                                nextDate = section[2]; 
+                                nextDate = section[2];
                             }
-                            
+
                             //Parse out packet Number
                             if (!int.TryParse(section[3], out section3))
                             {
@@ -834,68 +882,92 @@ class SproutClient
 
                                 if (section[2].Equals(currentDate) && section[4] != "0")
                                 {
-                                    Monitor.Enter(reSentMissedPackets); 
-                                        reSentMissedPackets.Add(section3);
-                                    Monitor.Exit(reSentMissedPackets); 
+                                    lock (reSentPacketsLock)
+                                    {
+                                        reSentPackets.Add(section3);
+                                    }
                                 }
                                 if (section[2].Equals(currentDate) && section[4] == "0")
                                 {
-                                    Monitor.Enter(packetsReceived); 
+                                    lock (packetsReceivedLock)
+                                    {
                                         packetsReceived.Add(section3);
-                                    Monitor.Exit(packetsReceived); 
+                                    }
                                 }
                                 if (section[2].Equals(nextDate) && section[4] != "0")
                                 {
-                                    Monitor.Enter(reSentMissedPacketsDay2); 
-                                        reSentMissedPacketsDay2.Add(section3);
-                                    Monitor.Exit(reSentMissedPacketsDay2); 
+                                    lock (reSentPacketsDay2Lock)
+                                    {
+                                        reSentPacketsDay2.Add(section3);
+                                    }
                                 }
                                 if (section[2].Equals(nextDate) && section[4] == "0")
                                 {
-                                    Monitor.Enter(packetsReceivedDay2); 
+                                    //packetReceivedDay2Lock
+                                    lock (packetsReceivedDay2Lock)
+                                    {
                                         packetsReceivedDay2.Add(section3);
-                                    Monitor.Exit(packetsReceivedDay2); 
+                                    }
                                 }
 
                                 if (!section[2].Equals(currentDate) && !section[2].Equals(nextDate) && !dateReceived)
                                 {
-                                    if (packetsMissed.Count > 0)
-                                        packetsMissed.Clear();
-                                    if (packetsReceived.Count > 0)
-                                        packetsReceived.Clear();
+                                    lock (packetsMissedLock)
+                                    {
+                                        if (packetsMissed.Count > 0)
+                                            packetsMissed.Clear();
+                                    }
+                                    lock (packetsReceivedLock)
+                                    {
+                                        if (packetsReceived.Count > 0)
+                                            packetsReceived.Clear();
+                                    }
 
                                     currentDate = section[2];
 
-                                    Monitor.Enter(packetsReceived); 
+                                    lock (packetsReceivedLock)
+                                    {
                                         packetsReceived.Add(section3);
-                                    Monitor.Exit(packetsReceived); 
+                                    }
                                 }
                                 else if (!section[2].Equals(currentDate) && !section[2].Equals(nextDate) && dateReceived)
                                 {
-                                    if (packetsMissedDay2.Count > 0)
-                                        packetsMissedDay2.Clear();
-                                    if (packetsReceivedDay2.Count > 0)
-                                        packetsReceivedDay2.Clear();
+                                    lock (packetsMissedDay2Lock)
+                                    {
+                                        if (packetsMissedDay2.Count > 0)
+                                            packetsMissedDay2.Clear();
+                                    }
+                                    lock (packetsMissedDay2Lock)
+                                    {
+                                        if (packetsReceivedDay2.Count > 0)
+                                            packetsReceivedDay2.Clear();
+                                    }
 
                                     currentDate = section[2];
 
-                                    Monitor.Enter(packetsReceived); 
+                                    lock (packetsReceivedLock)
+                                    {
                                         packetsReceived.Add(section3);
-                                    Monitor.Exit(packetsReceived); 
+                                    }
 
-                                    dateReceived = false; 
+                                    dateReceived = false;
                                 }
 
                                 Console.WriteLine("Packet Passed! " + section[0]); //delete after testing
 
                                 //Everything checks out, add the packet messasge to sproutQueue. 
-                                Monitor.Enter(sproutQueue);
-                                sproutQueue.Enqueue(section[5]);
-                                Monitor.Exit(sproutQueue);
+                                lock (sproutQueueLock)
+                                {
+                                    sproutQueue.Enqueue(section[5]);
+                                }
                             }
                         }
                     }
                 }
+            }
+            else
+            {
+                Thread.Sleep(100); 
             }
         }
     }

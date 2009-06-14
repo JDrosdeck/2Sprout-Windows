@@ -6,11 +6,11 @@
  </data>
  <data>
   <variable>RunConfiguration0-Executable</variable>
-  <value type="QString" >C:\Users\Alfred nOOb\Desktop\6-7-09\debug\2sprout.exe</value>
+  <value type="QString" >C:\Users\Alfred nOOb\Desktop\New Folder (2)\6-7-09\debug\2sprout.exe</value>
  </data>
  <data>
   <variable>RunConfiguration0-RunConfiguration.name</variable>
-  <value type="QString" >Run C:\Users\Alfred nOOb\Desktop\6-7-09\debug\2sprout.exe</value>
+  <value type="QString" >Run C:\Users\Alfred nOOb\Desktop\New Folder (2)\6-7-09\debug\2sprout.exe</value>
  </data>
  <data>
   <variable>RunConfiguration0-UseTerminal</variable>
@@ -152,7 +152,7 @@
     <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.0\</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >C:/Users/Alfred nOOb/Desktop/6-7-09/2sprout.pro</value>
+    <value type="QString" >C:/Users/Alfred nOOb/Desktop/New Folder (2)/6-7-09/2sprout.pro</value>
     <value type="QString" >-spec</value>
     <value type="QString" >win32-g++</value>
     <value type="QString" >-r</value>
@@ -160,7 +160,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString" >C:/Qt/2009.02/qt/bin/qmake.exe</value>
    <value key="abstractProcess.enabled" type="bool" >false</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/6-7-09</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/New Folder (2)/6-7-09</value>
   </valuemap>
  </data>
  <data>
@@ -214,7 +214,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString" >C:/Qt/2009.02/mingw/bin/mingw32-make.exe</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/6-7-09</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/New Folder (2)/6-7-09</value>
    <value key="buildConfiguration" type="int" >8</value>
   </valuemap>
  </data>

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading ui file 'sprout.ui'
 **
-** Created: Mon Jun 8 22:50:02 2009
+** Created: Tue Jun 9 15:20:05 2009
 **      by: Qt User Interface Compiler version 4.5.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
@@ -99,12 +99,21 @@ public:
         pushButton = new QPushButton(page);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
         pushButton->setGeometry(QRect(230, 440, 113, 32));
+        QIcon icon1;
+        icon1.addPixmap(QPixmap(QString::fromUtf8("icons/started.png")), QIcon::Normal, QIcon::Off);
+        pushButton->setIcon(icon1);
         pushButton_2 = new QPushButton(page);
         pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
         pushButton_2->setGeometry(QRect(340, 440, 113, 32));
+        QIcon icon2;
+        icon2.addPixmap(QPixmap(QString::fromUtf8("icons/stop.png")), QIcon::Normal, QIcon::Off);
+        pushButton_2->setIcon(icon2);
         pushButton_3 = new QPushButton(page);
         pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
         pushButton_3->setGeometry(QRect(10, 440, 121, 32));
+        QIcon icon3;
+        icon3.addPixmap(QPixmap(QString::fromUtf8("icons/sprites_09.png")), QIcon::Normal, QIcon::Off);
+        pushButton_3->setIcon(icon3);
         stackedWidget->addWidget(page);
         page_2 = new QWidget();
         page_2->setObjectName(QString::fromUtf8("page_2"));
@@ -124,10 +133,10 @@ public:
         label_4->setObjectName(QString::fromUtf8("label_4"));
         label_4->setGeometry(QRect(310, 70, 41, 17));
         comboBox = new QComboBox(groupBox_2);
-        QIcon icon1;
-        icon1.addPixmap(QPixmap(QString::fromUtf8(":/icons/db_add.png")), QIcon::Normal, QIcon::Off);
-        comboBox->addItem(icon1, QString());
-        comboBox->addItem(icon1, QString());
+        QIcon icon4;
+        icon4.addPixmap(QPixmap(QString::fromUtf8(":/icons/db_add.png")), QIcon::Normal, QIcon::Off);
+        comboBox->addItem(icon4, QString());
+        comboBox->addItem(icon4, QString());
         comboBox->setObjectName(QString::fromUtf8("comboBox"));
         comboBox->setGeometry(QRect(130, 30, 161, 26));
         comboBox->setMinimumContentsLength(0);
@@ -157,9 +166,13 @@ public:
         pushButton_5 = new QPushButton(page_2);
         pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
         pushButton_5->setGeometry(QRect(330, 440, 113, 32));
+        QIcon icon5;
+        icon5.addPixmap(QPixmap(QString::fromUtf8("icons/db_host.png")), QIcon::Normal, QIcon::Off);
+        pushButton_5->setIcon(icon5);
         pushButton_6 = new QPushButton(page_2);
         pushButton_6->setObjectName(QString::fromUtf8("pushButton_6"));
         pushButton_6->setGeometry(QRect(20, 440, 113, 32));
+        pushButton_6->setIcon(icon3);
         groupBox_3 = new QGroupBox(page_2);
         groupBox_3->setObjectName(QString::fromUtf8("groupBox_3"));
         groupBox_3->setGeometry(QRect(20, 320, 431, 111));
