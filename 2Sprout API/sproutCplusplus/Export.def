@@ -1,0 +1,3 @@
+LIBRARY sprout.dll
+EXPORTS
+	getSproutItem
