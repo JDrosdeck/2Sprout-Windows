@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Security.Cryptography;
+//using System.Security.Cryptography;
 
     class Convert
     {
-        public static String GetMD5(String input)
+        public static String CalcCheckSum(String text)
+        {
+            int ascii = 0;
+            for (int i = 0; i < text.Length; i++)
+            {
+                ascii += (int)text[i]; 
+            }
+            return ascii.ToString(); 
+        }
+
+        /*public static String GetMD5(String input)
         {
             byte[] bs;
             StringBuilder s;
@@ -19,7 +29,7 @@ using System.Security.Cryptography;
                 s.Append(b.ToString("x2").ToLower());
             }
             return s.ToString();
-        }
+        }*/
 
         static public string EncodeTo64(string toEncode)
         {
