@@ -7,7 +7,10 @@ using System.Net.Sockets;
 using System.IO; 
 using MySql.Data.MySqlClient;
 using Npgsql;
-using NATUPNPLib; 
+using NATUPNPLib;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+
 
 public struct Config
 {
@@ -31,13 +34,9 @@ class SproutClient
     static String configPath; 
     static String cypher;
     static String secretKey;
-    static String cypherTemp = "aACZfGGL8R";
-    static String secretKeyTemp = "ePsYDJbtxC";
+    //static String cypherTemp = "aACZfGGL8R";
+    //static String secretKeyTemp = "ePsYDJbtxC";
     static int sleepTime;
-
-
-    static Object sproutQueueLock;
-    static Object unprocessedQueueLock; 
 
     static SproutList packetsReceived;
     static SproutList packetsReceivedDay2;
@@ -57,16 +56,28 @@ class SproutClient
     static bool dateReceived = false;
     static String apiKey = ""; 
 
-    static Config dbConfig; 
+    static Config dbConfig;
 
+    [DllImport("kernel32.dll")]
+    static extern bool SetConsoleCtrlHandler(ConsoleEventHandlerDelegate
+    handlerProc, bool add);
+
+
+    delegate bool ConsoleEventHandlerDelegate();
+
+    static ConsoleEventHandlerDelegate consoleHandler;
 
     public static void Main(String[] args)
     {
+        //Used for when the program terminates
+        consoleHandler = new ConsoleEventHandlerDelegate(ConsoleEventHandler);
+        SetConsoleCtrlHandler(ConsoleEventHandler, true);
+
         configPath = AppDomain.CurrentDomain.BaseDirectory + "//2sprout.conf"; //May be changed by CLA
 
         if (!ParseArguments(args))
         {
-            Console.ReadLine(); 
+            //Console.ReadLine(); 
             return;
         }
 
@@ -85,9 +96,6 @@ class SproutClient
         reSentPackets = new SproutList();
         reSentPacketsDay2 = new SproutList();
 
-        sproutQueueLock = new Object();
-        unprocessedQueueLock = new Object();
-
         unprocessedQueue = new SproutQueue();
         sproutQueue = new SproutQueue(); 
         currentDate = "";
@@ -98,7 +106,7 @@ class SproutClient
 
         if (dbConfig.error) //Exit the program if the configuration file has an error. 
         {
-            Console.ReadLine(); 
+            //Console.ReadLine(); 
             return;
         }
         if (useUpnp.Equals("true", StringComparison.OrdinalIgnoreCase))
@@ -107,7 +115,7 @@ class SproutClient
         }
         if (!RegisterClient())
         {
-            Console.ReadLine(); 
+            //Console.ReadLine(); 
             return; 
         }
         
@@ -120,16 +128,15 @@ class SproutClient
         myThreads[3] = new Thread(new ThreadStart(CheckLostPackets)); 
         myThreads[4] = new Thread(new ThreadStart(CheckLostPacketsDay2)); 
         myThreads[5] = new Thread(new ThreadStart(ReplaceLostPackets));
-        myThreads[6] = new Thread(new ThreadStart(ReplaceLostPacketsDay2)); 
+        myThreads[6] = new Thread(new ThreadStart(ReplaceLostPacketsDay2));
+        myThreads[7] = new Thread(new ThreadStart(StandardInput)); 
 
         if (dbConfig.useDb)
         {
-            myThreads[7] = new Thread(new ThreadStart(InsertIntoDb));
-            myThreads[8] = null;
+            myThreads[8] = new Thread(new ThreadStart(InsertIntoDb));
         }
         else
         {
-            myThreads[7] = new Thread(new ThreadStart(CreateAndReadPipe));
             myThreads[8] = new Thread(new ThreadStart(GetFeed)); 
         }      
 
@@ -143,6 +150,33 @@ class SproutClient
         {
             if (myThreads[i] != null)
                 myThreads[i].Join(); 
+        }
+    }
+
+
+    //Will run when user directly terminates program. 
+    static bool ConsoleEventHandler()
+    {
+        String url = "http://2sprout.com/disconnect/" + port + "/" + apiKey + "/";
+        WebClient webClient = new WebClient();
+        webClient.DownloadData(url);
+
+        Console.WriteLine("Program Terminated."); 
+        return (false);
+    }
+
+    //Will run when the API terminates program
+    public static void StandardInput()
+    {
+        String stdIn; 
+        for(; ; )
+        {
+            stdIn = Console.ReadLine();
+            if (stdIn.Equals("EXIT"))
+            {
+                ConsoleEventHandler();
+                System.Environment.Exit(0); 
+            }
         }
     }
 
@@ -220,12 +254,12 @@ class SproutClient
     {
         WebClient webClient = new WebClient();
         UTF8Encoding utfObj;
-        String input; 
+        String input = null; 
         String[] keys;
         byte[] reqHTML = null; 
 
         //Will be appended as server is developed. 
-        String url = "http://2sprout.com/r/" + port + "/" + apiKey + "/"; 
+        String url = "http://2sprout.com/connect/" + port + "/" + apiKey + "/"; 
 
         try
         {
@@ -238,7 +272,16 @@ class SproutClient
         }
 
         utfObj = new UTF8Encoding();
-        input = utfObj.GetString(reqHTML);
+
+        try
+        {
+            input = utfObj.GetString(reqHTML);
+        }
+        catch (ArgumentNullException e)
+        {
+            Console.WriteLine(e.Message);
+            return false; 
+        }
 
         if (input.Equals("0000"))
         {
@@ -251,15 +294,19 @@ class SproutClient
         keys = input.Split(new String[1] { "^" }, 3, StringSplitOptions.None);
         Console.WriteLine("Init: {0}  {1}  {2}", keys[0], keys[1], keys[2]);
 
-        if (keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "")
+        if (keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "" && int.TryParse(keys[2], out sleepTime))
         {
-            cypher = keys[0]; 
+            cypher = keys[0];
             secretKey = keys[1];
-            sleepTime = int.Parse(keys[2]); 
+            sleepTime *= 1000;
+            Console.WriteLine("Client Sucessfully Registered");
+            return true;
         }
-
-        Console.WriteLine("Client Sucessfully Registered");
-        return true; 
+        else
+        {
+            Console.WriteLine("Client could not be registered.");
+            return false; 
+        }
     }
 
     //Will be called from Main
@@ -337,8 +384,8 @@ class SproutClient
                 }
                 else if (firstSub == "dbport" && secondSub != "")
                 {
-                    myConfig.dbPort = int.Parse(secondSub); 
-                    numOfArgsFound++;
+                    if(int.TryParse(secondSub, out myConfig.dbPort))
+                        numOfArgsFound++;
                 }
                 else if (firstSub == "dbname" && secondSub != "")
                 {
@@ -409,7 +456,7 @@ class SproutClient
         WebClient webClient = new WebClient();
         UTF8Encoding utfObj;
         String input; 
-        String[] keys;
+        String[] keys = null;
         byte[] reqHTML = null; 
 
         for (; ; )
@@ -417,33 +464,39 @@ class SproutClient
             Thread.Sleep(sleepTime);
             try
             {
-                reqHTML = webClient.DownloadData("http://2sprout.com/u/" + port + "/" + apiKey + "/");
+                reqHTML = webClient.DownloadData("http://2sprout.com/refresh/" + port + "/" + apiKey + "/");
             }
             catch (WebException e)
             {
                 Console.WriteLine(e.Message);
             }
+            
             utfObj = new UTF8Encoding();
-            input = utfObj.GetString(reqHTML);
-            input = Convert.DecodeFrom64(input); 
 
-            //The key will change to the previous obtained key.
-            input = Convert.EncryptDecrypt(input, cypher); 
-            keys = input.Split(new String[1] { "^" }, 3, StringSplitOptions.None);
-
-            if (keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "" && int.TryParse(keys[2], out sleepTime))
+            try
+            {
+                input = utfObj.GetString(reqHTML);
+                input = Convert.DecodeFrom64(input); 
+                input = Convert.EncryptDecrypt(input, cypher);
+                keys = input.Split(new String[1] { "^" }, 3, StringSplitOptions.None);
+            }
+            catch (ArgumentNullException e)
+            {
+                keys = null; 
+                Console.WriteLine(e.Message);
+            }
+            
+            if (keys != null && keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "" && int.TryParse(keys[2], out sleepTime))
             {
                 cypher = keys[0];
                 secretKey = keys[1];
+                sleepTime *= 1000; 
                 Console.WriteLine("{0}  {1}  {2}", keys[0], keys[1], keys[2]);
             }
             else
             {
                 sleepTime = 30000;
                 Console.WriteLine("Cypher/Secret Key Corrupted");
-
-                //To be removed upon implementation
-                Console.WriteLine(input);
             }
         }
 
@@ -528,10 +581,7 @@ class SproutClient
                 {
                     if (sproutQueue.Count > 0)
                     {
-                        lock (sproutQueueLock)
-                        {
-                            query = sproutQueue.Dequeue();
-                        }
+                        query = sproutQueue.Dequeue();
                         query = query.Replace("\\", "\\\\");
                         query = query.Replace("'", "\\'");
                         query = String.Format("INSERT INTO {0} (`{1}`) VALUES('{2}')", dbConfig.dbTable, dbConfig.dbCol, query);
@@ -582,10 +632,7 @@ class SproutClient
 
                     if (sproutQueue.Count > 0)
                     {
-                        lock (sproutQueueLock)
-                        {
-                            query = sproutQueue.Dequeue();
-                        }
+                        query = sproutQueue.Dequeue();
                         query = query.Replace("\\", "\\\\");
                         query = query.Replace("'", "\\'");
                         query = String.Format("INSERT INTO \"{0}\" (\"{1}\") VALUES('{2}')", dbConfig.dbTable, dbConfig.dbCol, query);
@@ -656,14 +703,11 @@ class SproutClient
             inData = Encoding.ASCII.GetString(inBytes);
 
             inData = Convert.DecodeFrom64(inData);
-            inData = Convert.EncryptDecrypt(inData, cypherTemp); 
+            inData = Convert.EncryptDecrypt(inData, cypher); //CYPHER TEMPORARY POSITION
 
-            if(inData.Length > 9 && inData.Substring(0, 10).Equals(secretKeyTemp))
+            if(inData.Length > 9 && inData.Substring(0, 10).Equals(secretKey))//SECRET KEY TEMPORARY POSITION
             {
-                lock (unprocessedQueueLock)
-                {
-                    unprocessedQueue.Enqueue(inData.Substring(10, inData.Length - 10));  
-                }
+                unprocessedQueue.Enqueue(inData.Substring(10, inData.Length - 10));  
             }
             else 
             {
@@ -725,14 +769,22 @@ class SproutClient
 
     public static void ReplaceLostPackets()
     {
-        //Thread.Sleep(int.MaxValue); //TO BE REMOVED UPON IMPLEMENTATION
+        for (; ; )
+        {
+            Thread.Sleep(20);
+
+            if (packetsMissed.Count != 0 && reSentPackets.Count != 0)
+            {
+
+            }
+        }
     }
     public static void CheckLostPacketsDay2()
     {
         //Thread.Sleep(int.MaxValue); //TO BE REMOVED UPON IMPLEMENTATION
     }
 
-    public static void ReplaceLostPacketsDay2()
+   public static void ReplaceLostPacketsDay2()
     {
         //Thread.Sleep(int.MaxValue); //TO BE REMOVED UPON IMPLEMENTATION
     }
@@ -741,6 +793,7 @@ class SproutClient
     public static void GetFeed()
     {
         String path = @"c:\kingHippo\example.txt"; //Temporary location; 
+        String data = ""; 
 
         StreamWriter writer;
 
@@ -752,44 +805,47 @@ class SproutClient
             Directory.CreateDirectory(@"c:\kingHippo\"); 
 
         if(!File.Exists(path)) //Create the buffer file if it doesn't exist. 
-            File.Create(path);  
+            File.Create(path);
 
+        int tempCounter = 0; 
         for (; ; )
         {
 
-            if (sproutQueue.Count > 0)
+            if (sproutQueue.Count > 0 || !data.Equals(""))
             {
                 try
                 {
                     info = new FileInfo(path);
                     if (info.Length == 0)
                     {
-                        writer = new StreamWriter(path, true);
-                        lock (sproutQueueLock)
+                        if(data.Equals(""))
                         {
-                            writer.WriteLine(sproutQueue.Dequeue());
+                            data = sproutQueue.Dequeue(); 
                         }
-                        Console.WriteLine("Data successfully written to API.");
-
+                        writer = new StreamWriter(path, true);
+                        writer.WriteLine(data); 
                         writer.Close();
                         writer.Dispose();
+                        Console.WriteLine("Data successfully written to API. " + tempCounter++);
+                        data = ""; 
                     }
                 }
                 catch (Exception)
                 {
+                    Console.WriteLine("ERROR, COULDN'T WRITE PACKET"); 
                     Thread.Sleep(10);
                 }
             }
             else
             {
-                Thread.Sleep(50);
+                Thread.Sleep(40);
             }
         }
     }
 
-    public static void CreateAndReadPipe()
+    public static void UponExit()
     {
-        //Thread.Sleep(int.MaxValue); //TO BE REMOVED UPON IMPLEMENTATION
+
     }
 
     public static void SetUpnp()
@@ -863,10 +919,7 @@ class SproutClient
         {
             if (unprocessedQueue.Count > 0)
             {
-                lock (unprocessedQueueLock)
-                {
-                    token = unprocessedQueue.Dequeue();
-                }
+                token = unprocessedQueue.Dequeue();
 
                 //PACKET FORMAT: CheckSum^Date^Packet#^0/1^data
                 section = token.Split(new String[1] { "^" }, 5, StringSplitOptions.None);
@@ -952,10 +1005,7 @@ class SproutClient
                             Console.WriteLine("Packet Passed! " + section[2]); //delete after testing
 
                             //Everything checks out, add the packet messasge to sproutQueue. 
-                            lock (sproutQueueLock)
-                            {
-                                sproutQueue.Enqueue(section[4]);
-                            }
+                            sproutQueue.Enqueue(section[4]);
                         }
                         
                     }
