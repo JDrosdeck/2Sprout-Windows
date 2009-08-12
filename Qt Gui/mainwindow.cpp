@@ -26,13 +26,14 @@ extern int sproutPort;
 //External declaration for API Key
 extern QString apiKey;
 
-QString dbtype = "postgres";
+QString dbtype = "none";
 QString dbhost = "";
 QString dbuser = "";
 QString dbpass = "";
 QString dbdefault = "";
-int dbport = 0;
+int dbport = 3306;
 
+bool useDatabase = false;
 bool enableUPNP = false;
 bool manualPort = false;
 int sproutPort = 4950;
@@ -49,20 +50,112 @@ MainWindow::MainWindow(QWidget *parent)
 {
 
     ui->setupUi(this);
+
+    QFile f("client/2sprout.conf");
+    if(!f.open(QFile::ReadOnly))
+    {
+         ui->textEdit->append("Could Not Read File");
+    }
+    QTextStream stream(&f);
+    QString line;
+    QString firstSub;
+    QString secondSub;
+    int foundPos;
+
+    while(!stream.atEnd())
+    {
+        firstSub = "";
+        secondSub = "";
+        line = stream.readLine();
+        if(line != "")
+        {
+            line = line.trimmed();
+
+            //find the first occurance of an '=' sign
+            foundPos = line.indexOf("=");
+
+            if(foundPos != -1)
+            {
+
+
+                firstSub = line.left(foundPos);
+                secondSub = line.right(line.length() - (foundPos + 1));
+
+                firstSub = firstSub.trimmed();
+                secondSub = secondSub.trimmed();
+
+                if(firstSub == "usedb" && secondSub == "false")
+                {
+                    useDatabase = false;
+                }
+                else if(firstSub == "usedb" && secondSub == "true")
+                {
+                    useDatabase = true;
+                }
+
+                if(firstSub == "dbtype" && secondSub != "")
+                {
+                    dbtype = secondSub;
+
+                }
+                if(firstSub == "dbhost" && secondSub != "") //
+                                        {
+                        dbhost = secondSub;
+
+                }
+                if(firstSub == "dbport" && secondSub != "") //
+                {
+                        dbport = atoi(secondSub.toStdString().c_str());
+
+                }
+                if(firstSub == "dbname" && secondSub != "")
+                {
+                        dbdefault = secondSub;
+
+                }
+                if(firstSub == "dbuser" && secondSub != "")
+                {
+                        dbuser = secondSub;
+
+                }
+                if(firstSub == "dbpassword" && secondSub != "")
+                {
+                        dbpass = secondSub;
+
+                }
+                if(firstSub == "dbtable" && secondSub != "")
+                {
+                        //Keep open for now
+
+                }
+                if(firstSub == "dbcol" && secondSub != "")
+                {
+                        //Keep open for now
+
+                }
+                if(firstSub == "upnp" && secondSub != "")
+                {
+                    if(secondSub == "true")
+                        enableUPNP = true;
+                    else if(secondSub == "false")
+                        enableUPNP = false;
+
+                }
+                if(firstSub == "apiKey" && secondSub != "")
+                {
+                        apiKey = secondSub;
+                }
+            }
+        }
+    }
+    f.close();
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-
-
-
-
-
-
-
 
 
 
@@ -103,7 +196,7 @@ void MainWindow::writeFile()
             {
                 out << "upnp=false" << endl;
             }
-            if(dbpass != "")
+            if(useDatabase)
             {
                 out << "usedb=true" << endl;
                 out << "dbtype=" << dbtype << endl;
@@ -118,14 +211,14 @@ void MainWindow::writeFile()
             else
             {
                 out << "usedb=false" << endl;
-                out << "dbtype=null" << endl;
-                out << "dbhost=null" << endl;
-                out << "dbport=0" << endl;
-                out << "dbname=null" << endl;
-                out << "dbuser=null" << endl;
-                out << "dbpassword=null" << endl;
-                out << "dbtable=null" << endl;
-                out << "dbcol=null" << endl;
+                out << "dbtype=" << dbtype << endl;
+                out << "dbhost=" << dbhost << endl;
+                out << "dbport=" << dbport << endl;
+                out << "dbname=" << dbdefault << endl;
+                out << "dbuser=" << dbuser << endl;
+                out << "dbpassword=" << dbpass << endl;
+                out << "dbtable=xmlFeed" << endl;
+                out << "dbcol=xml_data" << endl;
             }
 
 
@@ -210,10 +303,10 @@ void MainWindow::readFromStdout()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-        if(processStarted == true)
+    if(processStarted == true)
     {
-
         client->write("EXIT\n");
         ui->textEdit->append("Client Stopped.");
+        processStarted = false;
     }
 }

@@ -99,15 +99,15 @@
     <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.0\</value>
    </valuelist>
    <valuelist key="abstractProcess.arguments" type="QVariantList" >
-    <value type="QString" >C:/Users/Alfred nOOb/Desktop/7-1-09/qtSource/gui.pro</value>
+    <value type="QString" >C:/Users/Alfred nOOb/Desktop/7-30-09/qtSource/gui.pro</value>
     <value type="QString" >-spec</value>
     <value type="QString" >win32-g++</value>
     <value type="QString" >-r</value>
     <value type="QString" >CONFIG+=debug_and_release</value>
    </valuelist>
    <value key="abstractProcess.command" type="QString" >C:/Qt/2009.02/qt/bin/qmake.exe</value>
-   <value key="abstractProcess.enabled" type="bool" >false</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/7-1-09/qtSource</value>
+   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/7-30-09/qtSource</value>
    <value key="buildConfiguration" type="int" >10</value>
   </valuemap>
  </data>
@@ -163,7 +163,7 @@
    </valuelist>
    <value key="abstractProcess.command" type="QString" >C:/Qt/2009.02/mingw/bin/mingw32-make.exe</value>
    <value key="abstractProcess.enabled" type="bool" >true</value>
-   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/7-1-09/qtSource</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred nOOb/Desktop/7-30-09/qtSource</value>
    <valuelist key="makeargs" type="QVariantList" >
     <value type="QString" >debug</value>
    </valuelist>

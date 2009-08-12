@@ -34,8 +34,9 @@ class SproutClient
     static String configPath; 
     static String cypher;
     static String secretKey;
-    //static String cypherTemp = "aACZfGGL8R";
-    //static String secretKeyTemp = "ePsYDJbtxC";
+
+////static String cypherTemp = "aACZfGGL8R";
+////static String secretKeyTemp = "ePsYDJbtxC";
     static int sleepTime;
 
     static SproutList packetsReceived;
@@ -106,7 +107,7 @@ class SproutClient
 
         if (dbConfig.error) //Exit the program if the configuration file has an error. 
         {
-            //Console.ReadLine(); 
+            Console.ReadLine(); 
             return;
         }
         if (useUpnp.Equals("true", StringComparison.OrdinalIgnoreCase))
@@ -361,59 +362,60 @@ class SproutClient
                     useUpnp = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "usedb" && secondSub == "false")
+                else if (firstSub == "usedb")
                 {
-                    myConfig.useDb = false;
-                    numOfArgsFound++; 
-                }
-                else if (firstSub == "usedb" && secondSub == "true")
-                {
-                    myConfig.useDb = true; 
+                    if (secondSub == "true")
+                        myConfig.useDb = true;
+                    else
+                        myConfig.useDb = false;
+
                     numOfArgsFound++;
                 }
-
-                else if (firstSub == "dbtype" && secondSub != "")
+                else if (firstSub == "dbtype")
                 {
                     myConfig.dbType = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "dbhost" && secondSub != "")
+                else if (firstSub == "dbhost")
                 {
                     myConfig.dbHost = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "dbport" && secondSub != "")
+                else if (firstSub == "dbport")
                 {
-                    if(int.TryParse(secondSub, out myConfig.dbPort))
-                        numOfArgsFound++;
+                    if (!int.TryParse(secondSub, out myConfig.dbPort))
+                    {
+                        myConfig.dbPort = 0;
+                    }
+                    numOfArgsFound++;
                 }
-                else if (firstSub == "dbname" && secondSub != "")
+                else if (firstSub == "dbname")
                 {
                     myConfig.dbName = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "dbuser" && secondSub != "")
+                else if (firstSub == "dbuser")
                 {
                     myConfig.dbUser = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "dbpassword" && secondSub != "")
+                else if (firstSub == "dbpassword")
                 {
                     myConfig.dbPassword = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "dbtable" && secondSub != "")
+                else if (firstSub == "dbtable")
                 {
                     myConfig.dbTable = secondSub;
                     numOfArgsFound++;
 
                 }
-                else if (firstSub == "dbcol" && secondSub != "")
+                else if (firstSub == "dbcol")
                 {
                     myConfig.dbCol = secondSub;
                     numOfArgsFound++;
                 }
-                else if (firstSub == "apiKey" && secondSub != "")
+                else if (firstSub == "apiKey")
                 {
                     apiKey = secondSub;
 
@@ -421,19 +423,19 @@ class SproutClient
                     {
                         Console.WriteLine("API Key is not a valid length, check configuration file");
                         myConfig.error = true;
-                        return myConfig; 
+                        return myConfig;
                     }
 
                     for (int i = 0; i < apiKey.Length; i++)
                     {
-                        if(!char.IsLetterOrDigit(apiKey[i]))
+                        if (!char.IsLetterOrDigit(apiKey[i]))
                         {
                             Console.WriteLine("Invalid API key, check configuration file.");
                             myConfig.error = true;
-                            return myConfig; 
+                            return myConfig;
                         }
-                    }        
-                    numOfArgsFound++; 
+                    }
+                    numOfArgsFound++;
                 }
             }
         }
@@ -656,6 +658,11 @@ class SproutClient
                     }
                 }
             }
+            else //No database was selected
+            {
+                Console.WriteLine("No DBMS Selected.");
+                return; 
+            }
         }
     }
 
@@ -678,7 +685,7 @@ class SproutClient
             Console.WriteLine(e.ToString());
             return;
         }
-
+       
         Console.WriteLine("Entering Listener");
 
         for (; ; )
@@ -711,7 +718,7 @@ class SproutClient
             }
             else 
             {
-                 Console.WriteLine("Problem: Secret Key Failed");
+                Console.WriteLine("Problem: Secret Key Failed");
             }
         }
     }
@@ -769,16 +776,9 @@ class SproutClient
 
     public static void ReplaceLostPackets()
     {
-        for (; ; )
-        {
-            Thread.Sleep(20);
-
-            if (packetsMissed.Count != 0 && reSentPackets.Count != 0)
-            {
-
-            }
-        }
+        //Thread.Sleep(int.MaxValue); //TO BE REMOVED UPON IMPLEMENTATION
     }
+
     public static void CheckLostPacketsDay2()
     {
         //Thread.Sleep(int.MaxValue); //TO BE REMOVED UPON IMPLEMENTATION
@@ -841,11 +841,6 @@ class SproutClient
                 Thread.Sleep(40);
             }
         }
-    }
-
-    public static void UponExit()
-    {
-
     }
 
     public static void SetUpnp()

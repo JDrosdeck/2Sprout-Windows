@@ -10,6 +10,11 @@ Network::Network(QWidget *parent) :
     m_ui(new Ui::Network)
 {
     m_ui->setupUi(this);
+
+    m_ui->checkBox_2->setChecked(enableUPNP);
+    m_ui->checkBox_3->setChecked(manualPort);
+    m_ui->spinBox->setValue(sproutPort);
+
 }
 
 Network::~Network()

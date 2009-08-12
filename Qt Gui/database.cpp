@@ -8,7 +8,19 @@ Database::Database(QWidget *parent) :
     QDialog(parent),
     m_ui(new Ui::Database)
 {
+
     m_ui->setupUi(this);
+        m_ui->lineEdit_9->setText(dbhost);
+        m_ui->lineEdit_6->setText(dbuser);
+        m_ui->lineEdit_7->setText(dbpass);
+        m_ui->lineEdit_8->setText(dbdefault);
+        m_ui->spinBox->setValue(dbport);
+        if(dbtype == "none")
+            m_ui->comboBox_2->setCurrentIndex(0);
+        if(dbtype == "mysql")
+            m_ui->comboBox_2->setCurrentIndex(1);
+        if(dbtype == "postgres")
+            m_ui->comboBox_2->setCurrentIndex(2);
 }
 
 Database::~Database()
@@ -28,6 +40,7 @@ void Database::changeEvent(QEvent *e)
 }
 
 
+
 void Database::on_pushButton_3_clicked()
 {
     this->close();
@@ -39,13 +52,20 @@ void Database::on_pushButton_2_clicked()
 
     if(!m_ui->lineEdit_6->text().isEmpty() && !m_ui->lineEdit_7->text().isEmpty() && !m_ui->lineEdit_8->text().isEmpty() && !m_ui->lineEdit_9->text().isEmpty())
     {
-        if(m_ui->comboBox_2->currentIndex() == 0)
+        if(m_ui->comboBox_2->currentIndex() == 1)
+        {
+            dbtype = "mysql";
+            useDatabase = true;
+        }
+        else if(m_ui->comboBox_2->currentIndex() == 2)
         {
             dbtype = "postgres";
+            useDatabase = true;
         }
         else
         {
-            dbtype = "mysql";
+            dbtype = "none";
+            useDatabase = false;
         }
 
         dbhost = m_ui->lineEdit_9->text();
@@ -60,8 +80,15 @@ void Database::on_pushButton_2_clicked()
     }
     else
     {
-        m_ui->label->clear();
-        m_ui->label->setText("Invalid Configuration");
+        if(m_ui->comboBox_2->currentIndex() != 0)
+        {
+            m_ui->label->clear();
+            m_ui->label->setText("Invalid Configuration");
+        }
+        else
+        {
+            this->close();
+        }
     }
 
 }

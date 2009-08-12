@@ -26,7 +26,7 @@
    <string>Database</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icons.qrc">
+   <iconset>
     <normaloff>:/icons/database_connect.png</normaloff>:/icons/database_connect.png</iconset>
   </property>
   <widget class="QGroupBox" name="groupBox_2">
@@ -65,12 +65,17 @@
       <widget class="QComboBox" name="comboBox_2">
        <item>
         <property name="text">
-         <string>PostgreSQL</string>
+         <string>None</string>
         </property>
        </item>
        <item>
         <property name="text">
          <string>MySQL</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>PostgreSQL</string>
         </property>
        </item>
       </widget>
@@ -276,8 +281,6 @@
    </property>
   </widget>
  </widget>
- <resources>
-  <include location="icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

@@ -10,7 +10,7 @@ extern QString dbpass;
 extern QString dbdefault;
 extern int dbport;
 
-
+extern bool useDatabase;
 extern bool enableUPNP;
 extern bool manualPort;
 extern int sproutPort;

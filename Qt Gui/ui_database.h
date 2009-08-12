@@ -1,8 +1,8 @@
 /********************************************************************************
 ** Form generated from reading ui file 'database.ui'
 **
-** Created: Mon Jul 27 13:19:29 2009
-**      by: Qt User Interface Compiler version 4.6.0
+** Created: Fri Aug 7 14:46:39 2009
+**      by: Qt User Interface Compiler version 4.5.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling ui file!
 ********************************************************************************/
@@ -61,7 +61,7 @@ public:
         Database->setMinimumSize(QSize(0, 0));
         Database->setMaximumSize(QSize(474, 253));
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/icons/database_connect.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addPixmap(QPixmap(QString::fromUtf8(":/icons/database_connect.png")), QIcon::Normal, QIcon::Off);
         Database->setWindowIcon(icon);
         groupBox_2 = new QGroupBox(Database);
         groupBox_2->setObjectName(QString::fromUtf8("groupBox_2"));
@@ -196,8 +196,9 @@ public:
         label_8->setText(QApplication::translate("Database", "Engine", 0, QApplication::UnicodeUTF8));
         comboBox_2->clear();
         comboBox_2->insertItems(0, QStringList()
-         << QApplication::translate("Database", "PostgreSQL", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("Database", "None", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("Database", "MySQL", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("Database", "PostgreSQL", 0, QApplication::UnicodeUTF8)
         );
         label_9->setText(QApplication::translate("Database", "Server Host", 0, QApplication::UnicodeUTF8));
         lineEdit_9->setText(QApplication::translate("Database", "localhost", 0, QApplication::UnicodeUTF8));
