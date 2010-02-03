@@ -1,0 +1,3 @@
+12/29/2009 5:20:39 PM : 2sprout.conf file not found. Could not find file 'C:\Users\Alfred Noob\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\bin\Release\2sprout.conf'.
+12/29/2009 5:20:48 PM : 2sprout.conf file not found. Could not find file 'C:\Users\Alfred Noob\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\bin\Release\2sprout.conf'.
+12/29/2009 5:20:50 PM : 2sprout.conf file not found. Could not find file 'C:\Users\Alfred Noob\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\bin\Release\2sprout.conf'.

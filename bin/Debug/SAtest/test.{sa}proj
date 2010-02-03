@@ -1,0 +1,59 @@
+<SmartAssemblyProject ProjectID="{d40f9260-a9bf-49d0-85a3-c6d12d0ac489}" Version="2.0">
+    <MainAssemblyFileName>..\SproutClient.exe</MainAssemblyFileName>
+    <Configuration Name="Release">
+        <ApplicationName />
+        <Destination DestinationFileName=".\SproutClient.exe" />
+        <Assemblies>
+            <Assembly AssemblyName="MySql.Data, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
+                <Merging Merge="1">
+                    <Pruning />
+                    <Obfuscation />
+                    <ControlFlow />
+                    <MemberRefsProxy />
+                    <ResourcesCompression />
+                </Merging>
+                <Embedding />
+            </Assembly>
+            <Assembly AssemblyName="Npgsql, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7">
+                <Merging Merge="1">
+                    <Pruning />
+                    <Obfuscation />
+                    <ControlFlow />
+                    <MemberRefsProxy />
+                    <ResourcesCompression />
+                </Merging>
+                <Embedding />
+            </Assembly>
+            <Assembly AssemblyName="Mono.Security, Culture=neutral, PublicKeyToken=0738eb9f132ed756">
+                <Merging Merge="1">
+                    <Pruning />
+                    <Obfuscation />
+                    <ControlFlow />
+                    <MemberRefsProxy />
+                </Merging>
+                <Embedding />
+            </Assembly>
+            <Assembly AssemblyName="SproutClient, Culture=neutral, PublicKeyToken=null">
+                <Merging>
+                    <MemberRefsProxy />
+                    <Pruning Prune="1">
+                        <Exclusion />
+                    </Pruning>
+                    <Obfuscation Obfuscate="1">
+                        <Exclusion />
+                    </Obfuscation>
+                    <ControlFlow Obfuscate="1" />
+                </Merging>
+            </Assembly>
+        </Assemblies>
+        <Options>
+            <Obfuscation FieldsNameMangling="2" NameMangling="2" />
+            <ExceptionReporting />
+            <StrongNameSigning />
+            <OtherProtections />
+            <StringsEncoding Encode="1" />
+            <OtherOptimizations />
+            <Debugging CreatePDB="0" />
+        </Options>
+    </Configuration>
+</SmartAssemblyProject>
