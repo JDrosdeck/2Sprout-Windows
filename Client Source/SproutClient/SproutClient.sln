@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SproutClient", "SproutClient\SproutClient.csproj", "{9B44CB39-BD49-4052-A2A6-16A8B64F532A}"
+EndProject
+Global
+	GlobalSection(VaultVsipSolution-v2) = preSolution
+		VaultHost = http://localhost/VaultService
+		VaultRepositoryID = 2
+		VaultRepositoryGUID = 3b7abcda-c275-415e-9087-2639f4c142c4
+		ProjectCount = 1
+		ProjectRelativeDiskPath1 = SproutClient\SproutClient.csproj
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B44CB39-BD49-4052-A2A6-16A8B64F532A}.Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{9B44CB39-BD49-4052-A2A6-16A8B64F532A}.Debug|Any CPU.Build.0 = Release|Any CPU
+		{9B44CB39-BD49-4052-A2A6-16A8B64F532A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B44CB39-BD49-4052-A2A6-16A8B64F532A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

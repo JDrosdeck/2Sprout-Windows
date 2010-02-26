@@ -1,0 +1,6 @@
+2/16/2010 12:51:03 PM : Could not contact to http://2sprout.com/client/keepalive/4950/1b6cf2ba-a347-4917-980e-c4cd522c3f91/  -  The remote server returned an error: (500) Internal Server Error.
+2/16/2010 12:51:08 PM : Could not contact to http://2sprout.com/client/keepalive/4950/1b6cf2ba-a347-4917-980e-c4cd522c3f91/  -  The remote server returned an error: (500) Internal Server Error.
+2/16/2010 12:51:12 PM : Could not contact to http://2sprout.com/client/keepalive/4950/1b6cf2ba-a347-4917-980e-c4cd522c3f91/  -  The remote server returned an error: (500) Internal Server Error.
+2/16/2010 12:51:16 PM : Could not contact to http://2sprout.com/client/keepalive/4950/1b6cf2ba-a347-4917-980e-c4cd522c3f91/  -  The remote server returned an error: (500) Internal Server Error.
+2/16/2010 12:51:20 PM : Could not contact to http://2sprout.com/client/keepalive/4950/1b6cf2ba-a347-4917-980e-c4cd522c3f91/  -  The remote server returned an error: (500) Internal Server Error.
+2/19/2010 8:38:35 PM : Upnp mapping error.

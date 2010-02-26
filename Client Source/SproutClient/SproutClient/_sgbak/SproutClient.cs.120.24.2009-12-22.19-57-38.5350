@@ -1,0 +1,1064 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading; 
+using System.Net;
+using System.Net.Sockets;
+using System.IO; 
+using MySql.Data.MySqlClient;
+using Npgsql;
+using NATUPNPLib;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+
+
+public struct Config
+{
+    public bool useDb;
+    public String dbType;
+    public String dbHost;
+    public int dbPort;
+    public String dbName;
+    public String dbUser;
+    public String dbPassword;
+    public String dbTable;
+    public String dbCol;
+    public bool error; 
+}
+
+class SproutClient
+{
+    const int THREAD_COUNT = 10;
+
+    static String broadCasterID = null; 
+    static String useUpnp = "";
+    static String configPath; 
+    static String cypher;
+    static String oldCypher = null; 
+    static String secretKey;
+    static String oldSecretKey = null; 
+
+
+    //static String cypherTemp = "aACZfGGL8R";
+    //static String secretKeyTemp = "ePsYDJbtxC";
+    //static String oldCypherTemp = "aACZfGGL8R";
+    //static String oldSecretKeyTemp = "ePsYDJbtxC";
+    static int sleepTime;
+
+    static SproutList packetsReceived;
+    static SproutList packetsReceivedDay2;
+
+    static SproutList packetsMissed;
+    static SproutList packetsMissedDay2;
+
+    static SproutList reSentPackets;
+    static SproutList reSentPacketsDay2; 
+
+    static SproutQueue sproutQueue; 
+    static SproutQueue unprocessedQueue;
+
+    static ErrorLog errorLog; 
+
+    static int port = 0;
+    static String currentDate;
+    static String nextDate;
+    static bool dateReceived = false;
+    static String apiKey = "";
+    static object keyLock; 
+
+    static Config dbConfig;
+
+    [DllImport("kernel32.dll")]
+    static extern bool SetConsoleCtrlHandler(ConsoleEventHandlerDelegate
+    handlerProc, bool add);
+
+
+    delegate bool ConsoleEventHandlerDelegate();
+
+    static ConsoleEventHandlerDelegate consoleHandler;
+
+    public static void Main(String[] args)
+    {
+        //Used for when the program terminates
+        consoleHandler = new ConsoleEventHandlerDelegate(ConsoleEventHandler);
+        SetConsoleCtrlHandler(ConsoleEventHandler, true);
+
+        configPath = AppDomain.CurrentDomain.BaseDirectory + "//2sprout.conf"; //May be changed by CLA
+
+        if (!ParseArguments(args))
+        {
+            return;
+        }
+
+        if (port == 0)
+        {
+            port = 4950; 
+        }
+
+        //Global variables. 
+        packetsReceived = new SproutList();
+        packetsReceivedDay2 = new SproutList();
+        packetsMissed = new SproutList();
+        packetsMissedDay2 = new SproutList();
+        reSentPackets = new SproutList();
+        reSentPacketsDay2 = new SproutList();
+
+        unprocessedQueue = new SproutQueue();
+        sproutQueue = new SproutQueue(); 
+        currentDate = "";
+        nextDate = "";
+        dateReceived = false;
+        keyLock = new Object();
+        errorLog = new ErrorLog(); 
+
+        dbConfig = ReadConfig();
+
+        if (dbConfig.error) //Exit the program if the configuration file has an error. 
+        {
+            Console.WriteLine("2sprout.conf error, Please check ERROR_LOG.txt for details."); 
+            return;
+        }
+        if (useUpnp.Equals("true", StringComparison.OrdinalIgnoreCase))
+        {
+            if (!SetUpnp())
+                Console.WriteLine("UPNP could not be established, check ERROR_LOG.txt for details."); 
+        }
+        if (!RegisterClient())
+        {
+            Console.WriteLine("Client Registration error, please check ERROR_LOG.txt for details."); 
+            return; 
+        }
+        if (dbConfig.useDb && !InsertIntoDb(true))
+        {
+            Console.WriteLine("Database error, please check ERROR_LOG.txt for details."); 
+            return; 
+        }
+
+        Console.WriteLine("Begin Feed."); 
+
+        //# of threads will change as program evolves. 
+        Thread [] myThreads = new Thread[THREAD_COUNT];
+
+        myThreads[0] = new Thread(new ThreadStart(GetSecretKey));
+        myThreads[1] = new Thread(new ThreadStart(CastListenerIPv4));
+        myThreads[2] = new Thread(new ThreadStart(CheckPacketReliability));
+        myThreads[3] = new Thread(new ThreadStart(CheckLostPacketsDay1)); 
+        myThreads[4] = new Thread(new ThreadStart(CheckLostPacketsDay2)); 
+        myThreads[5] = new Thread(new ThreadStart(ReplaceLostPacketsDay1));
+        myThreads[6] = new Thread(new ThreadStart(ReplaceLostPacketsDay2));
+        myThreads[7] = new Thread(new ThreadStart(StandardInput)); 
+        myThreads[8] = new Thread(new ThreadStart(CastListenerIPv6)); 
+
+        if (dbConfig.useDb)
+        {
+            myThreads[9] = new Thread(new ThreadStart(InsertIntoDb));
+        }
+        else
+        {
+            myThreads[9] = new Thread(new ThreadStart(GetFeed)); 
+        }      
+
+        for (int i = 0; i < THREAD_COUNT; i++)
+        {
+            if(myThreads[i] != null)
+                myThreads[i].Start(); 
+        }
+
+        for (int i = 0; i < THREAD_COUNT; i++)
+        {
+            if (myThreads[i] != null)
+                myThreads[i].Join(); 
+        }
+    }
+
+
+    //Will run when user directly terminates program. 
+    static bool ConsoleEventHandler()
+    {
+        GetHtml("http://2sprout.com/disconnect/", "ID=" + apiKey + "&port=" + port); 
+
+        Console.WriteLine("Program Terminated.");
+        System.Environment.Exit(0); 
+        return (false);
+    }
+
+    //Will run when the API terminates program
+    public static void StandardInput()
+    {
+        String stdIn; 
+        for(; ; )
+        {
+            stdIn = Console.ReadLine();
+            if (stdIn.Equals("EXIT"))
+                ConsoleEventHandler();       
+        }
+    }
+
+    //Returns true if arguments are acceptable, otherwise false. 
+    public static bool ParseArguments(String [] args)
+    {
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (args[i].Equals("-p", StringComparison.OrdinalIgnoreCase))   //Set Port Number
+            {
+                i++; 
+                if(i >= args.Length || !int.TryParse(args[i], out port))
+                {
+                    ShowHelp(args);
+                    return false; 
+                }
+                if (port <= 1024)
+                {
+                    errorLog.WriteMessage("Port Number is Reserved, must be greater than 1024: " + port.ToString());
+                    return false;
+                }
+            }
+            else if (args[i].Equals("-c", StringComparison.OrdinalIgnoreCase))  //Set configuration file path
+            {
+                i++;
+                if (i >= args.Length || args[i].Length < 1)
+                {
+                    ShowHelp(args);
+                    return false; 
+                }
+                configPath = args[i]; 
+            }
+            else if (args[i].Equals("-h", StringComparison.OrdinalIgnoreCase))  //Show help info
+            {
+                ShowHelp(args);
+                return false; 
+            }
+            else if (args[i].Equals("-v", StringComparison.OrdinalIgnoreCase))  //Show version #
+            {
+                Version myVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                Console.WriteLine("Version: {0}.{1}   Build: {2}.{3}", myVersion.Major, myVersion.Minor, myVersion.Build, myVersion.Revision);
+                return false; 
+            }
+            else if (args[i].Equals("-d", StringComparison.OrdinalIgnoreCase))  //Test Database
+            {
+                if (InsertIntoDb(true))
+                {
+                    Console.WriteLine("Database Connection Successful"); 
+                }
+                else
+                {
+                    Console.WriteLine("Unable to connect to Database. Please check configuration."); 
+                }
+                return false; 
+            }
+            else
+            {
+                ShowHelp(args);
+                return false;
+            }
+        }
+        return true; 
+    }
+
+
+    public static void ShowHelp(String [] args)
+    {
+        Console.WriteLine("Usage: SproutClient.exe [-p port_number] [-c configuration_path]");
+        Console.WriteLine("Optional: [-h help][-v version] [-d test database]");
+    }
+
+
+    //Will return false if, for any reason, the client could not be registered. 
+    public static bool RegisterClient()
+    {
+        String[] keys;
+
+        //Will be appended as server is developed. 
+        String input = GetHtml("http://2sprout.com/connect/", "ID=" + apiKey + "&port=" + port); 
+
+        if (input.Equals("0000"))
+        {
+            errorLog.WriteMessage("Client " + apiKey + " already exists in database."); 
+            return false; 
+        }
+
+        input = Convert.DecodeFrom64(input);
+        input = Convert.EncryptDecrypt(input, "2#sPr0uT5!");
+        keys = input.Split(new String[1] { "^" }, 3, StringSplitOptions.None);
+
+        if (keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "" && int.TryParse(keys[2], out sleepTime))
+        {
+            cypher = keys[0];
+            oldCypher = cypher; 
+            secretKey = keys[1];
+            oldSecretKey = secretKey; 
+            sleepTime *= 1000;
+            return true;
+        }
+        else
+        {
+            errorLog.WriteMessage("Appropriate init data was not returned from 2Sprout. Client could not be registered.");
+            return false; 
+        }
+    }
+
+    //Will be called from Main
+    public static Config ReadConfig()
+    {
+        int numOfArgsFound = 0;
+        String line;
+        int foundPos = 0; 
+        String firstSub = ""; 
+        String secondSub = "";  
+        Config myConfig = new Config();
+        StreamReader stream = null;
+        FileInfo sourceFile; 
+        try
+        {
+            sourceFile = new FileInfo(configPath); //"2sprout.conf"
+        }
+        catch (Exception e)
+        {
+            errorLog.WriteMessage("2sprout.conf fileinfo not found. " + e.Message);
+            myConfig.error = true; 
+            return myConfig;
+        }
+
+        try
+        {
+            stream = sourceFile.OpenText();
+        }
+        catch (FileNotFoundException e)
+        {
+            errorLog.WriteMessage("2sprout.conf file not found. " + e.Message);
+            myConfig.error = true; 
+            return myConfig;
+        }
+        catch (Exception e)
+        {
+            errorLog.WriteMessage("2sprout.conf exception. " + e.Message);
+            myConfig.error = true; 
+            return myConfig;
+        }
+
+        while (!stream.EndOfStream)
+        {
+            line = stream.ReadLine();
+            foundPos = line.IndexOf('=');
+            if (foundPos != -1)
+            {
+                firstSub = line.Substring(0, foundPos);
+                secondSub = line.Substring(foundPos + 1);
+                if (firstSub == "upnp")
+                {
+                    useUpnp = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "usedb")
+                {
+                    if (secondSub == "true")
+                        myConfig.useDb = true;
+                    else
+                        myConfig.useDb = false;
+
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbtype")
+                {
+                    myConfig.dbType = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbhost")
+                {
+                    myConfig.dbHost = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbport")
+                {
+                    if (!int.TryParse(secondSub, out myConfig.dbPort))
+                    {
+                        myConfig.dbPort = 0;
+                    }
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbname")
+                {
+                    myConfig.dbName = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbuser")
+                {
+                    myConfig.dbUser = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbpassword")
+                {
+                    myConfig.dbPassword = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "dbtable")
+                {
+                    myConfig.dbTable = secondSub;
+                    numOfArgsFound++;
+
+                }
+                else if (firstSub == "dbcol")
+                {
+                    myConfig.dbCol = secondSub;
+                    numOfArgsFound++;
+                }
+                else if (firstSub == "apiKey")
+                {
+                    apiKey = secondSub;
+
+                    if (apiKey.Length != 10)
+                    {
+                        errorLog.WriteMessage("API Key of length " + apiKey.Length + " is not valid, check configuration file");
+                        myConfig.error = true;
+                        return myConfig;
+                    }
+
+                    for (int i = 0; i < apiKey.Length; i++)
+                    {
+                        if (!char.IsLetterOrDigit(apiKey[i]))
+                        {
+                            errorLog.WriteMessage("Invalid API key, check configuration file.");
+                            myConfig.error = true;
+                            return myConfig;
+                        }
+                    }
+                    numOfArgsFound++;
+                }
+            }
+        }
+
+        stream.Close(); 
+        if (numOfArgsFound != 11)
+        {
+            errorLog.WriteMessage("2sprout.conf corrupted.");
+            myConfig.error = true;
+            return myConfig; 
+        }
+
+        myConfig.error = false; 
+        return myConfig; 
+    }
+
+    //Will obtain the cypher and secret key from 2sprout. 
+    public static void GetSecretKey()
+    {
+        String input;
+        String[] keys = null;
+
+        for (; ; )
+        {
+            Thread.Sleep(sleepTime);
+            lock (keyLock)
+            {
+                input = GetHtml("http://2sprout.com/refresh/", "ID=" + apiKey + "&port=" + port); 
+
+                input = Convert.DecodeFrom64(input);
+                input = Convert.EncryptDecrypt(input, cypher);
+                keys = input.Split(new String[1] { "^" }, 3, StringSplitOptions.None);
+
+                if (keys != null && keys.Length == 3 && keys[0] != "" && keys[1] != "" && keys[2] != "" && int.TryParse(keys[2], out sleepTime))
+                {
+                    oldCypher = cypher;
+                    cypher = keys[0];
+                    oldSecretKey = secretKey;
+                    secretKey = keys[1];
+                    sleepTime *= 1000;
+                }
+                else
+                {
+                    //This will have to change at some point. (Shouldn't use arbitrary sleep time) 
+                    sleepTime = 30000;
+                    errorLog.WriteMessage("Data corruption from /refresh.");
+                }
+            }
+
+        }
+    }
+
+    /// <summary>
+    /// Run Database method as independent thread
+    /// </summary>
+    public static void InsertIntoDb()
+    {
+        InsertIntoDb(false); 
+    }
+
+    /// <summary>
+    /// Run Database method
+    /// </summary>
+    /// <param name="testDataBaseConn">If True then the method will only test the database connection. 
+    /// No data will be processed.</param>
+    /// <returns>True if database sucessfully connected, otherwise false.</returns>
+    public static bool InsertIntoDb(bool testDataBaseConn)
+    {
+        String query = "INSERT INTO " + dbConfig.dbTable + " (" + dbConfig.dbCol + ") VALUES(@data)"; 
+
+        if(testDataBaseConn)
+            dbConfig = ReadConfig();
+
+        if (dbConfig.error || !dbConfig.useDb)//Can't use dBase if error or dBase not selected
+            return false; 
+
+        if (dbConfig.dbType == "mysql")         //Inserting into mysql database. 
+        {
+            MySqlConnection connection;
+            String connect = String.Format("server={0};database={1};uid={2};password={3};port={4}",
+                dbConfig.dbHost, dbConfig.dbName, dbConfig.dbUser, dbConfig.dbPassword, dbConfig.dbPort);
+            try
+            {
+                connection = new MySqlConnection(connect);
+                connection.Open();
+            }
+            catch (Exception e)
+            {
+                errorLog.WriteMessage("MySQL failed to connect. " + e.Message);
+                return false;
+            }
+
+
+            if (testDataBaseConn)
+            {
+                connection.Close();
+                return true;
+            }
+
+            MySqlCommand insertData = new MySqlCommand(query, connection);
+
+            insertData.Parameters.Add(new MySqlParameter("@data", query)); //Will be removed and re-inserted with new data
+            for (; ; )
+            {
+                if (sproutQueue.Count > 0)
+                {
+                    try
+                    {
+                        query = sproutQueue.Dequeue();
+                        insertData.Parameters["@data"].Value = query; 
+                        insertData.ExecuteNonQuery();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("MySQL error, see ERROR_LOG.txt for details."); 
+                        errorLog.WriteMessage("Problem: MySQL failed to insert data. " + e.Message); 
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        }
+        else if (dbConfig.dbType == "postgres")  //Inserting into postgres database
+        {
+            NpgsqlConnection connection;
+
+            string connstring = String.Format("Server={0};Port={1};" +
+                "User Id={2};Password={3};Database={4};",
+                dbConfig.dbHost, dbConfig.dbPort, dbConfig.dbUser,
+                dbConfig.dbPassword, dbConfig.dbName);
+
+            try
+            {
+                connection = new NpgsqlConnection(connstring);
+                connection.Open();
+            }
+            catch (Exception e)
+            {
+                errorLog.WriteMessage("Problem: Postgres failed to connect. " + e.Message);
+
+                return false;
+            }
+
+            if (testDataBaseConn)
+            {
+                connection.Close(); 
+                return true;
+            }  
+
+            NpgsqlCommand insertData = new NpgsqlCommand(query, connection);
+            insertData.Parameters.Add(new MySqlParameter("@data", query));
+
+            for (; ; )
+            {
+                if (sproutQueue.Count > 0)
+                {
+                    try
+                    {
+                        query = sproutQueue.Dequeue();
+                        insertData.Parameters["@data"].Value = query; 
+                        insertData.ExecuteNonQuery();
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Postgres error, see ERROR_LOG.txt for details."); 
+                        errorLog.WriteMessage("Problem: postgres failed to insert data. " + e.Message);
+                    }
+                }
+                else
+                {
+                    Thread.Sleep(100);
+                }
+            }
+        }
+        else //No database was selected
+        {
+            errorLog.WriteMessage("No DBMS Selected.");
+            return false; 
+        }
+    }
+
+
+    public static void CastListenerIPv4()
+    {
+        CastListener(false); 
+    }
+
+    public static void CastListenerIPv6()
+    {
+        CastListener(true); 
+    }
+
+    //Listen to port and place incoming packets into queue
+    public static void CastListener(bool IsIPv6)
+    {
+        byte[] inBytes = null;
+        String inData;
+        int keySize; 
+        IPEndPoint myEndPoint;
+
+        if (IsIPv6)
+            myEndPoint = new IPEndPoint(IPAddress.IPv6Any, port);
+        else
+            myEndPoint = new IPEndPoint(IPAddress.Any, port); 
+
+        UdpClient myClient = null;
+
+        try
+        {
+            myClient = new UdpClient(myEndPoint);
+        }
+        catch (SocketException e)
+        {
+            Console.WriteLine("UDP error, Check ERROR_LOG.txt for details"); 
+            errorLog.WriteMessage("UDP Error. " + e.ToString());
+            //ConsoleEventHandler(); 
+        }
+
+        for (; ; )
+        {
+            try
+            {
+                inBytes = myClient.Receive(ref myEndPoint);
+            }
+            catch (ObjectDisposedException e)
+            {
+                Console.WriteLine("Socket error, Check ERROR_LOG.txt for details"); 
+                errorLog.WriteMessage("Socket error. " + e.ToString());
+                //ConsoleEventHandler(); 
+            }
+            catch (SocketException e)
+            {
+                Console.WriteLine("Socket error, Check ERROR_LOG.txt for details"); 
+                errorLog.WriteMessage("Socket error. " + e.ToString());
+                //ConsoleEventHandler(); 
+            }
+            lock (keyLock)
+            {
+                inData = Encoding.ASCII.GetString(inBytes);
+                inData = Convert.DecodeFrom64(inData);
+                inData = Convert.EncryptDecrypt(inData, cypher); //CYPHER TEMPORARY POSITION
+
+                keySize = inData.IndexOf('^'); 
+                if (keySize != -1 && (inData.Substring(0, keySize)).Equals(secretKey))//SECRET KEY TEMPORARY POSITION
+                {
+                    keySize++; 
+                    unprocessedQueue.Enqueue(inData.Substring(keySize, inData.Length - keySize));
+                }
+                else //Try using old cypher/secret key to help synchronize updates.
+                {
+                    inData = Convert.EncryptDecrypt(inData, cypher);
+                    inData = Convert.EncryptDecrypt(inData, oldCypher);
+
+                    keySize = inData.IndexOf('^'); 
+                    if (keySize != -1 && (inData.Substring(0, keySize).Equals(oldSecretKey)))
+                    {
+                        keySize++; 
+                        unprocessedQueue.Enqueue(inData.Substring(keySize, inData.Length - keySize)); 
+                    }
+                    else
+                    {
+                        errorLog.WriteMessage("Packet Corruption from: " + myEndPoint.Address.ToString());
+                    }
+                }
+            }
+        }
+    }
+
+    public static void CheckLostPacketsDay1()
+    {
+        CheckLostPackets(1); 
+    }
+
+    public static void CheckLostPacketsDay2()
+    {
+        CheckLostPackets(2); 
+    }
+
+    public static void CheckLostPackets(int day)
+    {
+        List<int> tempList = new List<int>();
+        int sizeOfReceived;
+        int lastPacket;
+        int sizeOfVector;
+        int sizeOfNewPackets;
+        int remainder; 
+
+        for (; ; )
+        {
+            Thread.Sleep(15);
+
+            //Day 1 or 2
+            sizeOfReceived = (day == 1) ? packetsReceived.Count : packetsReceivedDay2.Count; 
+
+            if (sizeOfReceived > 1)
+            {
+                //Create Templist for day 1 or 2
+                tempList = (day == 1) ? packetsReceived.GetAndClear() : packetsReceivedDay2.GetAndClear(); 
+
+                tempList.Sort();
+                lastPacket = tempList[tempList.Count - 1];
+
+                //Place last packet back into receive list. 
+                if (day == 1)
+                    packetsReceived.Add(lastPacket);
+                else
+                    packetsReceivedDay2.Add(lastPacket); 
+
+                //Get vector Size
+                sizeOfVector = (day == 1) ? packetsMissed.Count : packetsMissedDay2.Count; 
+
+                sizeOfNewPackets = tempList.Count;
+
+                //If packet numbers aren't consecutive then add to packetsMissed
+                for (int i = 0; i < sizeOfNewPackets - 1; i++) 
+                {
+                    remainder = tempList[i + 1] - tempList[i];
+
+                    if (remainder != 1)
+                    {
+                        errorLog.WriteMessage("There is a missing packet day " + day + " : " + tempList[i].ToString());
+                        for (int j = 1; j < remainder; j++)
+                        {
+                            if (day == 1)
+                                packetsMissed.Add(tempList[i] + j);
+                            else
+                                packetsMissedDay2.Add(tempList[i] + j);
+                        }
+                    }
+                }
+                tempList.Clear(); 
+            }
+        }
+    }
+
+    public static void ReplaceLostPacketsDay1()
+    {
+        ReplaceLostPackets(1); 
+    }
+
+    public static void ReplaceLostPacketsDay2()
+    {
+        ReplaceLostPackets(2); 
+    }
+
+    public static void ReplaceLostPackets(int day)
+    {
+        String urlMissed = ""; 
+        String postData; 
+        String[] newPackets; 
+        int numLostPackets;
+        List<int> packets;
+        String input;
+        int packetCount; 
+
+        for (; ; )
+        {
+            Thread.Sleep(15); 
+            numLostPackets = (day == 1) ? packetsMissed.Count : packetsMissedDay2.Count;
+            if (numLostPackets > 0) 
+            {
+                errorLog.WriteMessage("Replacing Lost Packets Day " + day + ": Notifying server");
+                //Make copy of the list and clear
+                packets = (day == 1) ? packetsMissed.GetAndClear() : packetsMissedDay2.GetAndClear();
+                postData = "ID=" + Convert.EncodeTo64(broadCasterID) + "&date=" + 
+                    Convert.EncodeTo64(currentDate) + "&missed=";
+                packetCount = 0; 
+
+                //Obtain each missing packet #
+                while (packets.Count > 0)
+                {
+                    urlMissed += packets[0].ToString() + "^";
+                    packets.RemoveAt(0);
+                    packetCount++; 
+
+                    if (packets.Count == 0 || packetCount >= 10)
+                    {
+                        packetCount = 0; 
+                        //Place encoded packet numbers into postdata, removing the last caret. 
+                        postData += Convert.EncodeTo64(urlMissed.Substring(0, Math.Max(urlMissed.Length - 1, 0))); 
+
+                        //Send post data
+                        input = GetHtml("http://www.2sprout.com/missed/", postData); 
+
+                        //Split packets using newline
+                        newPackets = input.Split(new char[1] { '\n' });
+                        foreach (String s in newPackets)
+                        {
+                            //temp
+                            sproutQueue.Enqueue("m" + urlMissed + "m" + s);
+                        }
+                        urlMissed = ""; 
+                    }
+                }
+            }  
+        }
+    }
+
+    public static void GetFeed()
+    {
+        String path = Environment.GetEnvironmentVariable("TEMP") + "\\spr138.txt"; 
+        String data = "";
+
+        StreamWriter writer;
+
+        FileInfo info;
+
+        if(!File.Exists(path)) //Create the buffer file if it doesn't exist. 
+        {
+            writer = File.CreateText(path);
+            writer.Close(); 
+        }
+
+        for (; ; )
+        {
+
+            if (sproutQueue.Count > 0 || !data.Equals(""))
+            {
+                try
+                {
+                    info = new FileInfo(path);
+                    if (info.Length == 0)
+                    {
+                        if(data.Equals(""))
+                        {
+                            data = sproutQueue.Dequeue(); 
+                        }
+                        writer = new StreamWriter(path, true);
+                        writer.WriteLine(data);
+                        writer.Flush(); 
+                        writer.Close();
+                        writer.Dispose();
+                        data = ""; 
+                    }
+                }
+                catch (Exception)
+                {
+                    errorLog.WriteMessage("Could not write packet to API: " + path); 
+                    Thread.Sleep(100);
+                }
+            }
+            else
+            {
+                Thread.Sleep(40);
+            }
+        }
+    }
+
+    //Returns true if Upnp established, otherwise false. 
+    public static bool SetUpnp()
+    {
+        UPnPNATClass upnpnat; 
+        try
+        {
+            upnpnat = new NATUPNPLib.UPnPNATClass();
+        }
+        catch(Exception e)
+        {
+            errorLog.WriteMessage("Upnp error. " + e.Message);
+            return false; 
+        }
+        IStaticPortMappingCollection mappings = upnpnat.StaticPortMappingCollection;
+        IPHostEntry host = null; 
+
+        if(mappings == null)
+        {
+            errorLog.WriteMessage("Upnp mapping error.");
+            return false; 
+        }
+
+        try
+        {
+            host = Dns.GetHostEntry(Dns.GetHostName());
+        }
+        catch (SocketException e)
+        {
+            errorLog.WriteMessage("Upnp socket error. " + e.Message);
+            return false;
+        }
+        catch (Exception e)
+        {
+            errorLog.WriteMessage("Could not obtain local IP address for Upnp. " + e.Message);
+            return false;
+        }
+
+        String address = ""; 
+        if (host.AddressList.Length > 0)
+        {
+            mappings.Remove(port, "UDP"); 
+            for (int i = 0; i < host.AddressList.Length; i++)
+            {
+                address = host.AddressList[i].ToString(); 
+                if(Convert.IsIPv4(address))
+                {
+                    try
+                    {
+                        mappings.Add(port, "UDP", port, address, true, "2Sprout");
+                    }
+                    catch(Exception e)
+                    {
+                        errorLog.WriteMessage("Upnp mapping addition error. " + e.Message); 
+                    }
+                }
+            }
+        }
+        return true; 
+    }
+
+    public static void GetNewBroadCaster(String newBroadCastID)
+    {
+        //Insert code to obtain new broadcast and all missed packets. 
+    }
+
+    public static void CheckPacketReliability()
+    {
+        String token;
+        String[] section;
+
+        String date; 
+        int packetNum; 
+        String data;
+        String inBroadCasterID;
+
+        for (; ; )
+        {
+            if (unprocessedQueue.Count > 0)
+            {
+                token = unprocessedQueue.Dequeue();
+
+                //PACKET FORMAT: Date^Packet#^BroadcasterID^data
+                section = token.Split(new String[1] { "^" }, 4, StringSplitOptions.None);
+
+                if (section.Length != 4|| section[0].Equals("") || section[1].Equals("") || section[2].Equals("") || section[3].Equals(""))
+                {
+                    errorLog.WriteMessage("Packet Error: not all data received");
+                }
+                else //input has the correct # of sections
+                {
+                    //Divide up sections
+                    date = section[0];
+                    inBroadCasterID = section[2]; 
+                    data = section[3]; 
+
+                    //Parse out packet Number
+                    if (!int.TryParse(section[1], out packetNum))
+                    {
+                        errorLog.WriteMessage("Packet Error: Bad Packet Number");
+                    }
+                    else //Packet Number OK
+                    {
+                        //Check to make sure broadcast ID has not changed.
+                        if (broadCasterID == null) //First use of broadcaster id
+                        {
+                            broadCasterID = inBroadCasterID;
+                        }
+                        else //Check and make sure broadcaster hasn't changed
+                        {
+                            if (!broadCasterID.Equals(inBroadCasterID))
+                            {
+                                GetNewBroadCaster(inBroadCasterID); 
+                            }
+                        }
+                        if (currentDate.Equals(""))
+                        {
+                            currentDate = date;
+                        }
+                        if (!date.Equals(currentDate) && nextDate.Equals(""))
+                        {
+                            nextDate = date;
+                        }
+                        if (date.Equals(currentDate))
+                        {
+                            packetsReceived.Add(packetNum);
+                        }
+                        if (date.Equals(nextDate))
+                        {
+                            packetsReceivedDay2.Add(packetNum);
+                        }
+                        if (!date.Equals(currentDate) && !date.Equals(nextDate) && !dateReceived)
+                        {
+                            packetsMissed.Clear();
+                            packetsReceived.Clear();
+
+                            currentDate = date;
+                            packetsReceived.Add(packetNum);
+                            dateReceived = false;
+                        }
+                        else if (!date.Equals(currentDate) && !date.Equals(nextDate) && dateReceived)
+                        {
+                            packetsMissedDay2.Clear();
+                            packetsReceivedDay2.Clear();
+
+                            currentDate = date;
+                            packetsReceived.Add(packetNum);
+                            dateReceived = false;
+                        }
+
+                        //Everything checks out, add the packet messasge to sproutQueue. 
+                        //temp
+                        sproutQueue.Enqueue("m" + packetNum + "m" + data);
+                    }
+                }
+            }
+            else
+            {
+                Thread.Sleep(100); 
+            }
+        }
+    }
+
+    public static String GetHtml(String url, String post)
+    {
+        WebClient webClient = new WebClient();
+        UTF8Encoding utfObj = new UTF8Encoding();
+
+        try
+        {
+            //Send post data
+            byte [] reqHTML = webClient.UploadData(url, "POST",
+                System.Text.Encoding.ASCII.GetBytes(post));
+            String input = utfObj.GetString(reqHTML);
+            return input; 
+        }
+        catch (WebException e)
+        {
+            errorLog.WriteMessage("Could not contact to " + url + "  -  " + e.Message); 
+            Thread.Sleep(2000);
+            return GetHtml(url, post); 
+        }
+        catch (ArgumentNullException e)
+        {
+            errorLog.WriteMessage("Could not retrieve data from " + url + "  -  " + e.Message); 
+            Thread.Sleep(2000);
+            return GetHtml(url, post); 
+        }
+    }
+}

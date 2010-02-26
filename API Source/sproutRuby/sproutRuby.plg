@@ -1,0 +1,41 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: sproutRuby - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\Scotty\LOCALS~1\Temp\RSP45.bat" with contents
+[
+@echo off
+swig -c++ -ruby -o .\sprout_wrap.cpp .\sprout.i
+]
+Creating command line "C:\DOCUME~1\Scotty\LOCALS~1\Temp\RSP45.bat"
+Creating temporary file "C:\DOCUME~1\Scotty\LOCALS~1\Temp\RSP46.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /I "C:\Ruby\lib\ruby\1.8\i386-mswin32" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SPROUTRUBY_EXPORTS" /D NT=1 /D "IMPORT" /Fp"Release/sproutRuby.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\Documents and Settings\Scotty\Desktop\Sprout API\sproutRuby\sprout_wrap.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\Scotty\LOCALS~1\Temp\RSP46.tmp" 
+SWIG
+Creating temporary file "C:\DOCUME~1\Scotty\LOCALS~1\Temp\RSP47.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib msvcrt-ruby18.lib /nologo /dll /incremental:no /pdb:"Release/sprout.pdb" /machine:I386 /out:"Release/sprout.dll" /implib:"Release/sprout.lib" /libpath:"C:\Ruby\lib" 
+".\Release\sprout.obj"
+".\Release\sprout_wrap.obj"
+]
+Creating command line "link.exe @C:\DOCUME~1\Scotty\LOCALS~1\Temp\RSP47.tmp"
+<h3>Output Window</h3>
+Compiling...
+sprout_wrap.cpp
+Linking...
+   Creating library Release/sprout.lib and object Release/sprout.exp
+
+
+
+<h3>Results</h3>
+sprout.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
