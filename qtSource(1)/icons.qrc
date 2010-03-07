@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>icons/accept.png</file>
+        <file>icons/bullet_wrench.png</file>
+        <file>icons/control_pause.png</file>
+        <file>icons/control_pause_blue.png</file>
+        <file>icons/control_play.png</file>
+        <file>icons/control_play_blue.png</file>
+        <file>icons/database_add.png</file>
+        <file>icons/database_connect.png</file>
+        <file>icons/database_delete.png</file>
+        <file>icons/delete.png</file>
+        <file>icons/door_out.png</file>
+        <file>icons/help.png</file>
+        <file>icons/key_add.png</file>
+        <file>icons/star.png</file>
+        <file>icons/2sprout.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,436 @@
+<!DOCTYPE QtCreatorProject>
+<qtcreator>
+ <data>
+  <variable>RunConfiguration0-CommandLineArguments</variable>
+  <valuelist type="QVariantList" />
+ </data>
+ <data>
+  <variable>RunConfiguration0-ProFile</variable>
+  <value type="QString" >gui.pro</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-RunConfiguration.name</variable>
+  <value type="QString" >gui</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UseDyldImageSuffix</variable>
+  <value type="bool" >false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UseTerminal</variable>
+  <value type="bool" >false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserEnvironmentChanges</variable>
+  <valuelist type="QVariantList" />
+ </data>
+ <data>
+  <variable>RunConfiguration0-UserSetName</variable>
+  <value type="bool" >false</value>
+ </data>
+ <data>
+  <variable>RunConfiguration0-type</variable>
+  <value type="QString" >Qt4ProjectManager.Qt4RunConfiguration</value>
+ </data>
+ <data>
+  <variable>activeRunConfiguration</variable>
+  <value type="int" >0</value>
+ </data>
+ <data>
+  <variable>activebuildconfiguration</variable>
+  <value type="QString" >Release</value>
+ </data>
+ <data>
+  <variable>buildConfiguration-Debug</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
+   <value key="QtVersionId" type="int" >2</value>
+   <value key="addQDumper" type="" ></value>
+   <value key="buildDirectory" type="QString" >C:\Users\Alfred Noob\Desktop\(current)\qtSource</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildConfiguration-Release</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
+   <value key="QtVersionId" type="int" >2</value>
+   <value key="addQDumper" type="" ></value>
+   <value key="buildDirectory" type="QString" >C:\Dropbox\My Dropbox\2Sprout, LLC\Application (Client)\Windows\qtSource(1)</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Debug-buildstep0</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList" >
+    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString" >APPDATA=C:\Users\Alfred Noob\AppData\Roaming</value>
+    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
+    <value type="QString" >COMPUTERNAME=ALFREDNOOB-HOME</value>
+    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString" >DFSTRACINGON=FALSE</value>
+    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
+    <value type="QString" >HOMEDRIVE=C:</value>
+    <value type="QString" >HOMEPATH=\Users\Alfred Noob</value>
+    <value type="QString" >LOCALAPPDATA=C:\Users\Alfred Noob\AppData\Local</value>
+    <value type="QString" >LOGONSERVER=\\ALFREDNOOB-HOME</value>
+    <value type="QString" >NUMBER_OF_PROCESSORS=4</value>
+    <value type="QString" >OS=Windows_NT</value>
+    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\PHP\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\Program Files\Common Files\DivX Shared\;C:\MinGW\bin\;C:\Program Files\Java\jdk1.6.0_16\bin;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\kingHippo</value>
+    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString" >PHPRC=C:\Program Files\PHP\</value>
+    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 11, GenuineIntel</value>
+    <value type="QString" >PROCESSOR_LEVEL=6</value>
+    <value type="QString" >PROCESSOR_REVISION=0f0b</value>
+    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
+    <value type="QString" >PUBLIC=C:\Users\Public</value>
+    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
+    <value type="QString" >SESSIONNAME=Console</value>
+    <value type="QString" >SYSTEMDRIVE=C:</value>
+    <value type="QString" >SYSTEMROOT=C:\Windows</value>
+    <value type="QString" >TEMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TRACE_FORMAT_SEARCH_PATH=\\NTREL202.ntdev.corp.microsoft.com\4F18C3A5-CA09-4DBD-B6FC-219FDD4C6BE0\TraceFormat</value>
+    <value type="QString" >USERDOMAIN=AlfredNoob-Home</value>
+    <value type="QString" >USERNAME=Alfred Noob</value>
+    <value type="QString" >USERPROFILE=C:\Users\Alfred Noob</value>
+    <value type="QString" >VS90COMNTOOLS=C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\</value>
+    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >XNAGSSHARED=C:\Program Files\Common Files\Microsoft Shared\XNA\</value>
+    <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.1\</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList" >
+    <value type="QString" >C:/Users/Alfred Noob/Desktop/current/qtSource/gui.pro</value>
+    <value type="QString" >-spec</value>
+    <value type="QString" >win32-g++</value>
+    <value type="QString" >-r</value>
+    <value type="QString" >CONFIG+=debug_and_release</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/qt/bin/qmake.exe</value>
+   <value key="abstractProcess.enabled" type="bool" >false</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred Noob/Desktop/current/qtSource</value>
+   <value key="buildConfiguration" type="int" >10</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Debug-buildstep1</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList" >
+    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString" >APPDATA=C:\Users\Alfred Noob\AppData\Roaming</value>
+    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
+    <value type="QString" >COMPUTERNAME=ALFREDNOOB-HOME</value>
+    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString" >DFSTRACINGON=FALSE</value>
+    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
+    <value type="QString" >HOMEDRIVE=C:</value>
+    <value type="QString" >HOMEPATH=\Users\Alfred Noob</value>
+    <value type="QString" >LOCALAPPDATA=C:\Users\Alfred Noob\AppData\Local</value>
+    <value type="QString" >LOGONSERVER=\\ALFREDNOOB-HOME</value>
+    <value type="QString" >NUMBER_OF_PROCESSORS=4</value>
+    <value type="QString" >OS=Windows_NT</value>
+    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\PHP\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\Program Files\Common Files\DivX Shared\;C:\MinGW\bin\;C:\Program Files\Java\jdk1.6.0_16\bin;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\kingHippo</value>
+    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString" >PHPRC=C:\Program Files\PHP\</value>
+    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 11, GenuineIntel</value>
+    <value type="QString" >PROCESSOR_LEVEL=6</value>
+    <value type="QString" >PROCESSOR_REVISION=0f0b</value>
+    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
+    <value type="QString" >PUBLIC=C:\Users\Public</value>
+    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
+    <value type="QString" >SESSIONNAME=Console</value>
+    <value type="QString" >SYSTEMDRIVE=C:</value>
+    <value type="QString" >SYSTEMROOT=C:\Windows</value>
+    <value type="QString" >TEMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TRACE_FORMAT_SEARCH_PATH=\\NTREL202.ntdev.corp.microsoft.com\4F18C3A5-CA09-4DBD-B6FC-219FDD4C6BE0\TraceFormat</value>
+    <value type="QString" >USERDOMAIN=AlfredNoob-Home</value>
+    <value type="QString" >USERNAME=Alfred Noob</value>
+    <value type="QString" >USERPROFILE=C:\Users\Alfred Noob</value>
+    <value type="QString" >VS90COMNTOOLS=C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\</value>
+    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >XNAGSSHARED=C:\Program Files\Common Files\Microsoft Shared\XNA\</value>
+    <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.1\</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList" >
+    <value type="QString" >debug</value>
+    <value type="QString" >-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred Noob/Desktop/current/qtSource</value>
+   <valuelist key="makeargs" type="QVariantList" >
+    <value type="QString" >debug</value>
+   </valuelist>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Debug-cleanstep0</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Debug</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList" >
+    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString" >APPDATA=C:\Users\Alfred Noob\AppData\Roaming</value>
+    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
+    <value type="QString" >COMPUTERNAME=ALFREDNOOB-HOME</value>
+    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString" >DFSTRACINGON=FALSE</value>
+    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
+    <value type="QString" >HOMEDRIVE=C:</value>
+    <value type="QString" >HOMEPATH=\Users\Alfred Noob</value>
+    <value type="QString" >LOCALAPPDATA=C:\Users\Alfred Noob\AppData\Local</value>
+    <value type="QString" >LOGONSERVER=\\ALFREDNOOB-HOME</value>
+    <value type="QString" >NUMBER_OF_PROCESSORS=4</value>
+    <value type="QString" >OS=Windows_NT</value>
+    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\PHP\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\Program Files\Common Files\DivX Shared\;C:\MinGW\bin\;C:\Program Files\Java\jdk1.6.0_16\bin;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\kingHippo</value>
+    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString" >PHPRC=C:\Program Files\PHP\</value>
+    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 11, GenuineIntel</value>
+    <value type="QString" >PROCESSOR_LEVEL=6</value>
+    <value type="QString" >PROCESSOR_REVISION=0f0b</value>
+    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
+    <value type="QString" >PUBLIC=C:\Users\Public</value>
+    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
+    <value type="QString" >SESSIONNAME=Console</value>
+    <value type="QString" >SYSTEMDRIVE=C:</value>
+    <value type="QString" >SYSTEMROOT=C:\Windows</value>
+    <value type="QString" >TEMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TRACE_FORMAT_SEARCH_PATH=\\NTREL202.ntdev.corp.microsoft.com\4F18C3A5-CA09-4DBD-B6FC-219FDD4C6BE0\TraceFormat</value>
+    <value type="QString" >USERDOMAIN=AlfredNoob-Home</value>
+    <value type="QString" >USERNAME=Alfred Noob</value>
+    <value type="QString" >USERPROFILE=C:\Users\Alfred Noob</value>
+    <value type="QString" >VS90COMNTOOLS=C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\</value>
+    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >XNAGSSHARED=C:\Program Files\Common Files\Microsoft Shared\XNA\</value>
+    <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.1\</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList" >
+    <value type="QString" >clean</value>
+    <value type="QString" >-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.enabled" type="bool" >false</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Users/Alfred Noob/Desktop/(current)/qtSource</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Release-buildstep0</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList" >
+    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString" >APPDATA=C:\Users\Alfred Noob\AppData\Roaming</value>
+    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
+    <value type="QString" >COMPUTERNAME=ALFREDNOOB-HOME</value>
+    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString" >DFSTRACINGON=FALSE</value>
+    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
+    <value type="QString" >HOMEDRIVE=C:</value>
+    <value type="QString" >HOMEPATH=\Users\Alfred Noob</value>
+    <value type="QString" >LOCALAPPDATA=C:\Users\Alfred Noob\AppData\Local</value>
+    <value type="QString" >LOGONSERVER=\\ALFREDNOOB-HOME</value>
+    <value type="QString" >NUMBER_OF_PROCESSORS=4</value>
+    <value type="QString" >OS=Windows_NT</value>
+    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\PHP\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\Program Files\Common Files\DivX Shared\;C:\MinGW\bin\;C:\Program Files\Java\jdk1.6.0_16\bin;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\Program Files\Python26</value>
+    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString" >PHPRC=C:\Program Files\PHP\</value>
+    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 11, GenuineIntel</value>
+    <value type="QString" >PROCESSOR_LEVEL=6</value>
+    <value type="QString" >PROCESSOR_REVISION=0f0b</value>
+    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
+    <value type="QString" >PUBLIC=C:\Users\Public</value>
+    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
+    <value type="QString" >SESSIONNAME=Console</value>
+    <value type="QString" >SYSTEMDRIVE=C:</value>
+    <value type="QString" >SYSTEMROOT=C:\Windows</value>
+    <value type="QString" >TEMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TRACE_FORMAT_SEARCH_PATH=\\NTREL202.ntdev.corp.microsoft.com\4F18C3A5-CA09-4DBD-B6FC-219FDD4C6BE0\TraceFormat</value>
+    <value type="QString" >USERDOMAIN=AlfredNoob-Home</value>
+    <value type="QString" >USERNAME=Alfred Noob</value>
+    <value type="QString" >USERPROFILE=C:\Users\Alfred Noob</value>
+    <value type="QString" >VS90COMNTOOLS=C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\</value>
+    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >XNAGSSHARED=C:\Program Files\Common Files\Microsoft Shared\XNA\</value>
+    <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.1\</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList" >
+    <value type="QString" >C:/Dropbox/My Dropbox/2Sprout, LLC/Application (Client)/Windows/qtSource(1)/gui.pro</value>
+    <value type="QString" >-spec</value>
+    <value type="QString" >win32-g++</value>
+    <value type="QString" >-r</value>
+    <value type="QString" >CONFIG+=debug_and_release</value>
+    <value type="QString" >CONFIG+=release</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/qt/bin/qmake.exe</value>
+   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Dropbox/My Dropbox/2Sprout, LLC/Application (Client)/Windows/qtSource(1)</value>
+   <value key="buildConfiguration" type="int" >8</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Release-buildstep1</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList" >
+    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString" >APPDATA=C:\Users\Alfred Noob\AppData\Roaming</value>
+    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
+    <value type="QString" >COMPUTERNAME=ALFREDNOOB-HOME</value>
+    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString" >DFSTRACINGON=FALSE</value>
+    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
+    <value type="QString" >HOMEDRIVE=C:</value>
+    <value type="QString" >HOMEPATH=\Users\Alfred Noob</value>
+    <value type="QString" >LOCALAPPDATA=C:\Users\Alfred Noob\AppData\Local</value>
+    <value type="QString" >LOGONSERVER=\\ALFREDNOOB-HOME</value>
+    <value type="QString" >NUMBER_OF_PROCESSORS=4</value>
+    <value type="QString" >OS=Windows_NT</value>
+    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\PHP\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\Program Files\Common Files\DivX Shared\;C:\MinGW\bin\;C:\Program Files\Java\jdk1.6.0_16\bin;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\Program Files\Python26</value>
+    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString" >PHPRC=C:\Program Files\PHP\</value>
+    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 11, GenuineIntel</value>
+    <value type="QString" >PROCESSOR_LEVEL=6</value>
+    <value type="QString" >PROCESSOR_REVISION=0f0b</value>
+    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
+    <value type="QString" >PUBLIC=C:\Users\Public</value>
+    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
+    <value type="QString" >SESSIONNAME=Console</value>
+    <value type="QString" >SYSTEMDRIVE=C:</value>
+    <value type="QString" >SYSTEMROOT=C:\Windows</value>
+    <value type="QString" >TEMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TRACE_FORMAT_SEARCH_PATH=\\NTREL202.ntdev.corp.microsoft.com\4F18C3A5-CA09-4DBD-B6FC-219FDD4C6BE0\TraceFormat</value>
+    <value type="QString" >USERDOMAIN=AlfredNoob-Home</value>
+    <value type="QString" >USERNAME=Alfred Noob</value>
+    <value type="QString" >USERPROFILE=C:\Users\Alfred Noob</value>
+    <value type="QString" >VS90COMNTOOLS=C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\</value>
+    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >XNAGSSHARED=C:\Program Files\Common Files\Microsoft Shared\XNA\</value>
+    <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.1\</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList" >
+    <value type="QString" >release</value>
+    <value type="QString" >-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Dropbox/My Dropbox/2Sprout, LLC/Application (Client)/Windows/qtSource(1)</value>
+   <valuelist key="makeargs" type="QVariantList" >
+    <value type="QString" >release</value>
+   </valuelist>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfiguration-Release-cleanstep0</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" >Release</value>
+   <valuelist key="abstractProcess.Environment" type="QVariantList" >
+    <value type="QString" >ALLUSERSPROFILE=C:\ProgramData</value>
+    <value type="QString" >APPDATA=C:\Users\Alfred Noob\AppData\Roaming</value>
+    <value type="QString" >COMMONPROGRAMFILES=C:\Program Files\Common Files</value>
+    <value type="QString" >COMPUTERNAME=ALFREDNOOB-HOME</value>
+    <value type="QString" >COMSPEC=C:\Windows\system32\cmd.exe</value>
+    <value type="QString" >DFSTRACINGON=FALSE</value>
+    <value type="QString" >FP_NO_HOST_CHECK=NO</value>
+    <value type="QString" >HOMEDRIVE=C:</value>
+    <value type="QString" >HOMEPATH=\Users\Alfred Noob</value>
+    <value type="QString" >LOCALAPPDATA=C:\Users\Alfred Noob\AppData\Local</value>
+    <value type="QString" >LOGONSERVER=\\ALFREDNOOB-HOME</value>
+    <value type="QString" >NUMBER_OF_PROCESSORS=4</value>
+    <value type="QString" >OS=Windows_NT</value>
+    <value type="QString" >PATH=C:\Qt\2009.04\mingw\bin;C:\Qt\2009.04\qt\bin;C:\Program Files\PHP\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;c:\Program Files\Microsoft SQL Server\90\Tools\binn\;C:\Program Files\Common Files\DivX Shared\;C:\MinGW\bin\;C:\Program Files\Java\jdk1.6.0_16\bin;C:\Program Files\MySQL\MySQL Server 5.1\bin;C:\Program Files\Python26</value>
+    <value type="QString" >PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC</value>
+    <value type="QString" >PHPRC=C:\Program Files\PHP\</value>
+    <value type="QString" >PROCESSOR_ARCHITECTURE=x86</value>
+    <value type="QString" >PROCESSOR_IDENTIFIER=x86 Family 6 Model 15 Stepping 11, GenuineIntel</value>
+    <value type="QString" >PROCESSOR_LEVEL=6</value>
+    <value type="QString" >PROCESSOR_REVISION=0f0b</value>
+    <value type="QString" >PROGRAMDATA=C:\ProgramData</value>
+    <value type="QString" >PROGRAMFILES=C:\Program Files</value>
+    <value type="QString" >PUBLIC=C:\Users\Public</value>
+    <value type="QString" >QTDIR=C:/Qt/2009.04/qt</value>
+    <value type="QString" >SESSIONNAME=Console</value>
+    <value type="QString" >SYSTEMDRIVE=C:</value>
+    <value type="QString" >SYSTEMROOT=C:\Windows</value>
+    <value type="QString" >TEMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TMP=C:\Users\ALFRED~1\AppData\Local\Temp</value>
+    <value type="QString" >TRACE_FORMAT_SEARCH_PATH=\\NTREL202.ntdev.corp.microsoft.com\4F18C3A5-CA09-4DBD-B6FC-219FDD4C6BE0\TraceFormat</value>
+    <value type="QString" >USERDOMAIN=AlfredNoob-Home</value>
+    <value type="QString" >USERNAME=Alfred Noob</value>
+    <value type="QString" >USERPROFILE=C:\Users\Alfred Noob</value>
+    <value type="QString" >VS90COMNTOOLS=C:\Program Files\Microsoft Visual Studio 9.0\Common7\Tools\</value>
+    <value type="QString" >WINDIR=C:\Windows</value>
+    <value type="QString" >XNAGSSHARED=C:\Program Files\Common Files\Microsoft Shared\XNA\</value>
+    <value type="QString" >XNAGSV3=C:\Program Files\Microsoft XNA\XNA Game Studio\v3.1\</value>
+   </valuelist>
+   <valuelist key="abstractProcess.arguments" type="QVariantList" >
+    <value type="QString" >clean</value>
+    <value type="QString" >-w</value>
+   </valuelist>
+   <value key="abstractProcess.command" type="QString" >C:/Qt/2009.04/mingw/bin/mingw32-make.exe</value>
+   <value key="abstractProcess.enabled" type="bool" >true</value>
+   <value key="abstractProcess.workingDirectory" type="QString" >C:/Dropbox/My Dropbox/2Sprout, LLC/Application (Client)/Windows/qtSource(1)</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildconfigurations</variable>
+  <valuelist type="QVariantList" >
+   <value type="QString" >Debug</value>
+   <value type="QString" >Release</value>
+  </valuelist>
+ </data>
+ <data>
+  <variable>buildstep0</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" ></value>
+   <value key="mkspec" type="QString" ></value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildstep1</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" ></value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>buildsteps</variable>
+  <valuelist type="QVariantList" >
+   <value type="QString" >trolltech.qt4projectmanager.qmake</value>
+   <value type="QString" >trolltech.qt4projectmanager.make</value>
+  </valuelist>
+ </data>
+ <data>
+  <variable>cleanstep0</variable>
+  <valuemap type="QVariantMap" >
+   <value key="ProjectExplorer.BuildConfiguration.DisplayName" type="QString" ></value>
+   <value key="clean" type="bool" >true</value>
+  </valuemap>
+ </data>
+ <data>
+  <variable>cleansteps</variable>
+  <valuelist type="QVariantList" >
+   <value type="QString" >trolltech.qt4projectmanager.make</value>
+  </valuelist>
+ </data>
+ <data>
+  <variable>defaultFileEncoding</variable>
+  <value type="QByteArray" >System</value>
+ </data>
+ <data>
+  <variable>project</variable>
+  <valuemap type="QVariantMap" />
+ </data>
+</qtcreator>

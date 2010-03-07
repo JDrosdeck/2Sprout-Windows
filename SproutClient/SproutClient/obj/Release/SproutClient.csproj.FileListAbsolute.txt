@@ -1,0 +1,13 @@
+C:\Users\Alfred nOOb\AppData\Local\Temporary Projects\SproutClient\bin\Release\SproutClient.exe
+C:\Users\Alfred nOOb\AppData\Local\Temporary Projects\SproutClient\bin\Release\SproutClient.pdb
+C:\Users\Alfred nOOb\AppData\Local\Temporary Projects\SproutClient\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alfred nOOb\AppData\Local\Temporary Projects\SproutClient\obj\Release\SproutClient.exe
+C:\Users\Alfred nOOb\AppData\Local\Temporary Projects\SproutClient\obj\Release\SproutClient.pdb
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\bin\Release\SproutClient.exe
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\bin\Release\SproutClient.pdb
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\obj\Release\SproutClient.exe
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\obj\Release\SproutClient.pdb
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\bin\Release\Interop.NATUPNPLib.dll
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\obj\Release\Interop.NATUPNPLib.dll
+C:\Users\Alfred nOOb\Documents\Visual Studio 2008\Projects\SproutClient\SproutClient\obj\Release\SproutClient.csproj.ResolveComReference.cache

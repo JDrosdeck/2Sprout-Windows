@@ -1,0 +1,24 @@
+Input String:
+http://2sprout.com/client/connect/
+Encrypted String:
+?2473656>6>6?636?247>65696<636?2=6?636>24757?627073723?2?2:307474786
+Testing Decryptor:
+http://2sprout.com/client/connect/
+Input String:
+http://2sprout.com/client/keepalive/
+Encrypted String:
+?2566796<616075656;6?247>65696<636?2=6?636>24757?627073723?2?2:307474786
+Testing Decryptor:
+http://2sprout.com/client/keepalive/
+Input String:
+http://www.2sprout.com/missed/
+Encrypted String:
+?24656373796=6?2=6?636>24757?627073723>2777777?2?2:307474786
+Testing Decryptor:
+http://www.2sprout.com/missed/
+Input String:
+http://2sprout.com/client/disconnect/
+Encrypted String:
+?2473656>6>6?636379646?247>65696<636?2=6?636>24757?627073723?2?2:307474786
+Testing Decryptor:
+http://2sprout.com/client/disconnect/

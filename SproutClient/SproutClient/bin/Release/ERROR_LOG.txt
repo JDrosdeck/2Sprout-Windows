@@ -1,0 +1,2 @@
+3/6/2010 8:19:28 PM : Appropriate init data was not returned from 2Sprout. Client could not be registered.
+3/6/2010 8:19:44 PM : Appropriate init data was not returned from 2Sprout. Client could not be registered.
